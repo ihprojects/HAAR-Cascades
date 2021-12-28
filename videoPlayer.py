@@ -4,7 +4,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from datetime import datetime
 
-# videopath='/home/ih/Videos/boardwalkDemo.mp4'
+videopath='/home/ih/Videos/boardwalkDemo.mp4'
 
 class Video():
     def __init__(self, path, fps, length_in_frames):
@@ -14,7 +14,7 @@ class Video():
 
 class VideoPlayer():
     def __init__(self, main_win, btn_play_pause, btn_stop, lbl_screen, lbl_fps, wait4frame, slider):
-        self.video_path='/home/ih/Videos/boardwalkDemo.mp4'
+        self.video_path=videopath
 
         self.main_win = main_win
 
@@ -58,14 +58,17 @@ class VideoPlayer():
             t1=datetime.now()
             ret, frame_np = self.cap.read()
             self.current_frame += 1
+
+            # get rects
             for dtc in self.main_win.detectors:
                 if dtc.is_active:
-
                     rects = dtc.get_rects(frame_np)
             #       self.vc.add_rects(frame_np, dtc.rects, dtc.rect_color)
                     for rect in rects:
                         cv2.rectangle(frame_np, rect, dtc.color, dtc.rect_border_size)
-            #convert ti img
+
+
+            #convert to img
             height, width, channel = frame_np.shape
             bytes_per_line = channel * width
             img = QImage(frame_np.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
@@ -78,7 +81,7 @@ class VideoPlayer():
 
             # https: // docs.python.org / 3 / library / datetime.html
             self.fps_real = int(-1/((self.t_1 - datetime.now()).total_seconds()))
-            self.lbl_fps.setText(str(self.fps_real))
+            self.lbl_fps.setText(f"FPS: {str(self.fps_real)}")
             self.t_1 = datetime.now()
             self.current_frame += 1
             self.slider.setValue(self.current_frame)

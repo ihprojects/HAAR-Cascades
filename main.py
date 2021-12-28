@@ -1,6 +1,6 @@
-#run this to convert win ui
-#pyuic5 -x win.ui -o win.py
-#pyuic5 -x mainWindow.ui -o uiMainWindow.py
+# run this to convert mainWindow.ui
+# pyuic5 -x mainWindow.ui -o uiMainWindow.py
+# pyuic5 -x optionsTab.ui -o uiOptionsTab.py
 
 
 
