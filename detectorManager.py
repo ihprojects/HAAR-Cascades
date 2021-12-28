@@ -4,6 +4,9 @@ from PyQt5.QtCore import *
 import detector
 import uiOptionsTab
 import statusController
+from functools import partial
+
+
 
 class options_tab(QWidget):
     def __init__(self, detector_manager, detector):
@@ -26,11 +29,12 @@ class options_tab(QWidget):
             self.ui.verticalLayout.addLayout(hor_layout)
             hor_layout.addWidget(QLabel(key))
             hor_layout.addWidget(spin_box)
+            spin_box.valueChanged.connect(self.value_change, spin_box.value(),self.detector.tunable_params[key])
 
     # https: // stackoverflow.com / questions / 940555 / pyqt - sending - parameter - to - slot - when - connecting - to - a - signal
 #https://www.tutorialspoint.com/pyqt/pyqt_qspinbox_widget.htm
-    def value_change(self, property, spin_box):
-        property  = spin_box.value()
+    def value_change(self, value, property):
+        print(value)
 
     def set_events(self):
         self.btn_add.clicked.connect(self.detector_manager.add_detector)
