@@ -2,56 +2,14 @@ import cv2
 import datetime
 
 
-class Camera:
+class PersonDetector:
 
-    def __init__(self, source, picture_width=600, picture_height=600, fps=30, detection_area=(0, 0, 100, 200)):
-        self._video_capture = cv2.VideoCapture(source)
+    def __init__(self, cascade_classifier, detection_area=(0, 0, 100, 200)):
+        self._detected_persons = 0
         self._detection_area = detection_area
-        Camera.picture_width = picture_width
-        Camera.picture_height = picture_height
-        Camera.frames_per_seconds = fps
-
-    # get camera width
-    @property
-    def picture_width(self):
-        return self._video_capture.get(3)
-
-    # set camera width
-    @picture_width.setter
-    def picture_width(self, picture_width):
-
-        if picture_width <= 0:
-            return
-
-        self._video_capture.set(3, picture_width)
-
-    # get camera height
-    @property
-    def picture_height(self):
-        return self._video_capture.get(4)
-
-    # set camera height
-    @picture_height.setter
-    def picture_height(self, picture_height):
-
-        if picture_height <= 0:
-            return
-
-        self._video_capture.set(4, picture_height)
-
-    # get fps camera
-    @property
-    def frames_per_seconds(self):
-        return self._video_capture.get(5)
-
-    # set fps camera
-    @frames_per_seconds.setter
-    def frames_per_seconds(self, frames_per_seconds):
-        self._video_capture.set(5, frames_per_seconds)
-
-    def get_frame(self):
-        _, frame = self._video_capture.read()
-        return frame
+        self._cascade_classifier = cv2.CascadeClassifier(cascade_classifier)
+        self._logging_table = []
+        self._operation_mode = 2
 
     # get the person detection area -> tuple (start x - value, start y -value, width, height)
     @property
@@ -67,15 +25,19 @@ class Camera:
         else:
             self._detection_area = detection_area
 
+    @property
+    def operation_mode(self):
+        return self._operation_mode
 
-class PersonCounter:
+    @operation_mode.setter
+    def operation_mode(self, mode):
 
-    def __init__(self, classifier):
-        self._detected_persons = 0
-        self._classifier = classifier
-        self._loggingtable = []
+        if mode < 1 and mode > 3:
+            return
+        self._operation_mode = mode
 
-    # get the detected persons
+        # get the detected persons
+
     @property
     def detected_person(self):
         return self._detected_persons
@@ -87,27 +49,28 @@ class PersonCounter:
 
     # get the classifier for the Person detection
     @property
-    def classifier(self):
-        return self._classifier
+    def cascade_classifier(self):
+        return self._cascade_classifier
 
     # set the classifier for the Person detection
-    @classifier.setter
-    def classifier(self, classifier):
-        self._classifier = classifier
+    @cascade_classifier.setter
+    def cascade_classifier(self, classifier):
+        self._cascade_classifier = classifier
 
     @property
-    def loggingtable(self):
-        return self._loggingtable
+    def logging_table(self):
+        return self._logging_table
 
-    @loggingtable.setter
-    def loggingtable(self, count):
+    @logging_table.setter
+    def logging_table(self, count):
         x = str(datetime.datetime.now().time())
         y = str(datetime.datetime.now().date())
-        self._loggingtable.append([str(count), x, y])
+        self._logging_table.append([str(count), x, y])
 
-    def detec_person(self, faces, detected_faces, detection_area):
+    def detec_person(self, faces, detected_faces):
 
-        offset_x, offset_y, offset_width, offset_height = detection_area
+        offset_x, offset_y, offset_width, offset_height = self.detection_area
+        print(self.detection_area)
         number_of_person_old = self.detected_person
 
         for (x, y, w, h) in faces:
@@ -130,13 +93,65 @@ class PersonCounter:
             if diff_x > offset_width // 3 and diff_y > offset_y:
                 detected_faces += [(x, y)]
                 self.detected_person += 1
-                self._loggingtable = self.detected_person - number_of_person_old
+                self.logging_table = self.detected_person - number_of_person_old
+
+class Main:
+
+    def __init__(self, person_counter):
+        self._none_face_counter = 0
+        self._face_counter = 0
+        self._person_detector = person_counter
+        self._detected_faces =[]
+
+    def start_loop(self, frame, fps):
+
+        offset_x, offset_y, width_detection_area, height_detection_area = self._person_detector.detection_area
+        sub_frame = frame[offset_y:height_detection_area + offset_y, offset_x:width_detection_area + offset_x, :]
+        gray = cv2.cvtColor(sub_frame, cv2.COLOR_BGR2GRAY)
+        faces = self._person_detector.cascade_classifier.detectMultiScale(gray, 1.5, 4)
+
+
+        if len(faces) == 0:
+            self._none_face_counter += 1
+            self._face_counter = 0
+        else:
+            self._face_counter += 1
+            none_face_counter = 0
+
+        if self._none_face_counter == fps:
+            none_face_counter = 0
+            self._detected_faces = []
+
+        for x, y, w, h in faces:
+            x += offset_x
+            y += offset_y
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+        if self._person_detector.operation_mode == 1:
+            cv2.rectangle(frame, (offset_x, offset_y), (width_detection_area, height_detection_area), (0, 0, 255), 2)
+
+        elif self._person_detector.operation_mode == 2:
+            if self._face_counter >= fps:
+                self._person_detector.detec_person(faces, self._detected_faces)
+
+        elif self._person_detector.operation_mode == 3:
+            pass
+
+        # export the logging data
+        if len(self._person_detector.logging_table) >= 50:
+            is_successful = FileHandler.create_csv(self._person_detector.logging_table, file_path=r"C:\Temp\Test.csv")
+            if is_successful:
+                self._person_detector.logging_table = []
+
+        return frame
+
+
 
 
 class FileHandler:
 
     @staticmethod
-    def export_file(file_path, logging_table):
+    def create_csv(file_path, logging_table):
 
         try:
             file = open(file_path, "a")
