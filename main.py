@@ -1,10 +1,16 @@
-#code here
-import demoFeature1
+# run this in terminal to convert mainWindow.ui
+# pyuic5 -x mainWindow.ui -o uiMainWindow.py
+# pyuic5 -x optionsTab.ui -o uiOptionsTab.py
+# pyuic5 -x personCounter.ui -o uiPersonCounter.py
 
 
-while (True):
-    inp = input("Enter 1 to select demoFeature1 or press q to quit")
-    if inp =="q":
-        break
-    if inp == "1":
-        demoFeature1.hello()
+import sys
+import mainWindow
+from PyQt5.QtWidgets import *
+
+app = QApplication(sys.argv)
+# window = Window.Window(videopath)
+window = mainWindow.MainWindow()
+sys.exit(app.exec())
+
+
