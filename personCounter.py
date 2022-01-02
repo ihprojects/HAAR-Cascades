@@ -92,7 +92,7 @@ class PersonCounter(Scenario):
     def process_frame(self, vid_player, dtc):
 
         offset_x, offset_y, width_detection_area, height_detection_area = self.detection_area
-        sub_frame = vid_player.frame[offset_y:height_detection_area + offset_y, offset_x:width_detection_area + offset_x, :]
+        #sub_frame = vid_player.frame[offset_y:height_detection_area + offset_y, offset_x:width_detection_area + offset_x, :]
         # gray = cv2.cvtColor(sub_frame, cv2.COLOR_BGR2GRAY)
         # faces = self._person_detector.cascade_classifier.detectMultiScale(gray, 1.5, 4)
 

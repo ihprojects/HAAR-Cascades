@@ -16,15 +16,12 @@ class Video():
         self.total_frames = total_frames
 
 class VideoPlayer():
-    def __init__(self, detectors, btn_play_pause, btn_stop, lbl_screen, lbl_fps, wait4frame, slider, scenario):
+    def __init__(self, btn_play_pause, btn_stop, lbl_screen, wait4frame, slider):
         self.video_path=settings.DEFAULT_VIDEO_PATH
-        self.scenario = scenario
-        self.detectors = detectors
 
         self.btn_play_pause = btn_play_pause
         self.btn_stop = btn_stop
         self.lbl_screen = lbl_screen
-        self.lbl_fps = lbl_fps
         self.slider = slider
         self.frame = None
 
@@ -48,39 +45,8 @@ class VideoPlayer():
         self.btn_stop.clicked.connect(self.stop)
         self.slider.sliderPressed.connect(self.pause)
         self.slider.sliderReleased.connect(self.slider_moved)
-        self.wait4frame.timeout.connect(self.get_frame)
+        # self.wait4frame.timeout.connect(self.get_frame)
 
-    #this gets called by wait4frame timer event
-    def get_frame(self):
-
-        if 0 <= self.current_frame < self.video.total_frames:
-            t1 = datetime.now()
-            ret, self.frame = self.cap.read()
-            self.current_frame += 1
-
-            # get rects
-            for dtc in self.detectors:
-                if dtc.is_active:
-                    dtc.get_rects(self.frame)
-                    self.scenario.process_frame(self, dtc)
-
-            # convert to img
-            height, width, channel = self.frame.shape
-            bytes_per_line = channel * width
-            img = QImage(self.frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
-
-            # convert to pixmap
-            pix_map = QPixmap(img)
-            pix_map = pix_map.scaled(self.lbl_screen.width(), self.lbl_screen.height(),
-                                   aspectRatioMode=Qt.KeepAspectRatio)  # wut?
-            self.lbl_screen.setPixmap(pix_map)
-
-            # https: // docs.python.org / 3 / library / datetime.html
-            self.fps_real = int(-1/((self.t_1 - datetime.now()).total_seconds()))
-            self.lbl_fps.setText(f"FPS: {str(self.fps_real)}")
-            self.t_1 = datetime.now()
-            self.current_frame += 1
-            self.slider.setValue(self.current_frame)
 
     def play_pause(self):
         if self.is_playing:
@@ -105,7 +71,6 @@ class VideoPlayer():
         if self.cap:
             self.set_frame(1)
             self.wait4frame.stop()
-            self.get_frame()
             self.is_playing = False
             self.btn_play_pause.setText("Play")
 
@@ -124,10 +89,28 @@ class VideoPlayer():
         self.cap.set(1, frame_number)  # flag = 1 to set frame position # this drops fps
 
     def slider_moved(self):
-        if self.cap is None:
-            self.load_video(self.video_path)
         # https://www.tutorialspoint.com/pyqt/pyqt_qslider_widget_signal.htm
-        # self.pause()
+        self.pause()
         self.current_frame = self.slider.sliderPosition()
         self.set_frame(self.current_frame)
-        self.get_frame()
+
+        self.read_frame()
+        self.show_frame()
+
+    def read_frame(self):
+
+        if 0 <= self.current_frame < self.video.total_frames:
+            t1 = datetime.now()
+            ret, self.frame = self.cap.read()
+            self.current_frame += 1
+
+    def show_frame(self):
+        # convert to img
+        height, width, channel = self.frame.shape
+        bytes_per_line = channel * width
+        img = QImage(self.frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
+
+        # convert to pixmap
+        pix_map = QPixmap(img)
+        pix_map = pix_map.scaled(self.lbl_screen.width(), self.lbl_screen.height())
+        self.lbl_screen.setPixmap(pix_map)

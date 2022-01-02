@@ -194,8 +194,26 @@ color: rgb(209, 209, 209);</string>
      <height>23</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuVideo">
+     <property name="title">
+      <string>Video</string>
+     </property>
+     <addaction name="actionCamera_Mode"/>
+    </widget>
+    <addaction name="menuVideo"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionCamera_Mode">
+   <property name="text">
+    <string>Camera Mode</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
