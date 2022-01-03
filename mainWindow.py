@@ -5,7 +5,7 @@ import uiMainWindow
 import videoPlayer
 import detectorManager
 import personCounter
-
+import settings
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -14,12 +14,10 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.wait4frame = QTimer(self)      # timer to fire time based event
 
-        #TODO this should be done from gui
-        self.scenario = personCounter.PersonCounter()
-        # self.scenario = personCounter.TestScenario()
 
 
-        self.ui.lay_scenario.addWidget(self.scenario)
+
+
 
         self.ui.tabWidget.removeTab(1)      # what
         self.ui.tabWidget.removeTab(0)      # ever
@@ -46,25 +44,42 @@ class MainWindow(QMainWindow):
         self.cam_mode_action.triggered.connect(self.activate_cam_mode)
         self.file_mode_action.triggered.connect(self.activate_file_mode)
 
+
+        #TODO this should be done from gui
+        self.scenario = personCounter.PersonCounter(self.video_player)
+        # self.scenario = personCounter.TestScenario()
+        self.ui.lay_scenario.addWidget(self.scenario)
+        self.file_mode_action.setChecked(True)
+        self.activate_file_mode()
+
+
     def action_triggered(self):
         print("select File")
+
     def activate_cam_mode(self):
-        if self.cam_mode_action.isChecked():
-            self.file_mode_action.setChecked(False)
-            print("cam mode active")
+        # if self.cam_mode_action.isChecked():
+        self.file_mode_action.setChecked(False)
+        self.video_player.mode = "cam"
+        self.video_player.load_video(0)
+        self.scenario.init_ui()
+
     def activate_file_mode(self):
-            print("file mode active")
-            self.cam_mode_action.setChecked(False)
+        # if self.file_mode_action.isChecked():
+        self.cam_mode_action.setChecked(False)
+        self.video_player.mode = "file"
+        self.video_player.load_video(settings.DEFAULT_VIDEO_PATH)
+        self.scenario.init_ui()
+
     def run(self):
         self.video_player.read_frame()
 
         for dtc in self.detector_manager.detectors:
             if dtc.is_active:
                 dtc.get_rects(self.video_player.frame)
-                self.scenario.process_frame(self.video_player, dtc)
+                self.scenario.process_frame(dtc)
 
         self.video_player.show_frame()
-
+        print(self.video_player.lbl_screen.size())
 
     # TODO add some hoykeys
     def keyPressEvent(self, event):

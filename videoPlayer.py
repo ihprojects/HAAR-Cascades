@@ -10,14 +10,14 @@ import settings
 
 
 class Video():
-    def __init__(self, path, fps, total_frames):
-        self.path = path
+    def __init__(self, name, fps, total_frames):
+        self.name = name
         self.fps = fps
         self.total_frames = total_frames
 
 class VideoPlayer():
     def __init__(self, btn_play_pause, btn_stop, lbl_screen, wait4frame, slider):
-        self.video_path=settings.DEFAULT_VIDEO_PATH
+        self.video_path= None
 
         self.btn_play_pause = btn_play_pause
         self.btn_stop = btn_stop
@@ -29,7 +29,8 @@ class VideoPlayer():
         self.video = None
         self.fps = 0
         self.fps_real = 0
-
+        self.screen_size = (1920, 1080)     #default screen size
+        self.mode = "file"
         self.current_frame = 1
 
         # self.wait4frame = QTimer(main_win)
@@ -60,9 +61,6 @@ class VideoPlayer():
         self.btn_play_pause.setText("Play")
 
     def play(self):
-        if self.cap is None:
-            self.load_video(self.video_path)
-
         self.is_playing = True
         self.wait4frame.start(int((1 / self.fps) * 1000))
         self.btn_play_pause.setText("Pause")
@@ -75,15 +73,22 @@ class VideoPlayer():
             self.btn_play_pause.setText("Play")
 
     def load_video(self, file_path):
-        if settings.VIDEO_MODE == "cam":
-            self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture(file_path)
+        if self.mode == "cam":
+
             self.video = Video("Camera 1" ,30, 20000)
         else:
-            self.cap = cv2.VideoCapture(file_path)
+
         # flag = 5 to get fps of video file ; flag = 7 to get n of all frames
             self.video = Video(file_path, round(self.cap.get(5)), self.cap.get(7))
+
+
+
+
         self.fps = self.video.fps
+        self.read_frame()
         self.slider.setRange(1, self.video.total_frames)
+        self.screen_size = (self.frame.shape[1], self.frame.shape[0])
 
     def set_frame(self, frame_number):
         self.cap.set(1, frame_number)  # flag = 1 to set frame position # this drops fps
@@ -100,7 +105,6 @@ class VideoPlayer():
     def read_frame(self):
 
         if 0 <= self.current_frame < self.video.total_frames:
-            t1 = datetime.now()
             ret, self.frame = self.cap.read()
             self.current_frame += 1
 
