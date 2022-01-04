@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
 import detector
+import hogDetector
 import uiOptionsTab
 
 # use functools.partial to pass parameters when event is fired
@@ -94,14 +95,28 @@ class DetectorManager:
         pass
     # TODO these should be loaded from ui
     def init_detectors(self):
-        self.selected_name = 'HAAR Full Body'
-        self.selected_conf_file = 'data/haarcascade_fullbody.xml'
-        self.add_detector( )
-        self.selected_name = 'HAAR face'
-        self.selected_conf_file = 'data/haarcascade_frontalface_alt.xml'
-        self.add_detector( )
-        self.selected_name = 'HAAR Full Body'
-        self.selected_conf_file = 'data/haarcascade_fullbody.xml'
+        # self.selected_name = 'HAAR Full Body'
+        # self.selected_conf_file = 'data/haarcascade_fullbody.xml'
+        # self.add_detector( )
+        # self.selected_name = 'HAAR face'
+        # self.selected_conf_file = 'data/haarcascade_frontalface_alt.xml'
+        # self.add_detector( )
+        # self.selected_name = 'HAAR Full Body'
+        # self.selected_conf_file = 'data/haarcascade_fullbody.xml'
+        # self.selected_name = 'yolo'
+        # self.selected_conf_file = None
+        # self.add_detector()
+
+        self.detectors.append(detector.HAARCascades(self.rect_colors[len(self.detectors)],
+                                                    QLabel(''), 'HAAR Full Body', 'data/haarcascade_fullbody.xml'))
+        self.tab_widget.addTab(OptionsTab(self, self.detectors[-1]), f"{len(self.detectors)} HAAR Body ")
+        self.detectors.append(detector.HAARCascades(self.rect_colors[len(self.detectors)],
+                                                    QLabel(''), 'HAAR Face', 'data/haarcascade_frontalface_alt.xml'))
+        self.tab_widget.addTab(OptionsTab(self, self.detectors[-1]), f"{len(self.detectors)} HAAR Face")
+
+        self.detectors.append(hogDetector.HOGDetector(self.rect_colors[len(self.detectors)],
+                                                    QLabel(''), 'HOG', ''))
+        self.tab_widget.addTab(OptionsTab(self, self.detectors[-1]), f"{len(self.detectors)} HOG")
 
     def add_detector(self):
         # https://stackoverflow.com/questions/68006651/pyqt5-how-to-addwidget-at-the-specific-position

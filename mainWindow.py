@@ -79,7 +79,7 @@ class MainWindow(QMainWindow):
                 self.scenario.process_frame(dtc)
 
         self.video_player.show_frame()
-        print(self.video_player.lbl_screen.size())
+
 
     # TODO add some hoykeys
     def keyPressEvent(self, event):

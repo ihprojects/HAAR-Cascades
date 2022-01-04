@@ -24,7 +24,7 @@ class Detector:
         self.conf_file = conf_file
         self.label = lbl
         self.tunable_params =[self.color, self.rect_border_size]
-
+        # self.lbl.se
     def get_rects(self, frame):
         pass
 

@@ -1,0 +1,7 @@
+cmake==3.22.1
+dlib==19.22.1
+numpy==1.22.0
+opencv-python-headless==4.5.5.62
+PyQt5==5.15.6
+PyQt5-Qt5==5.15.2
+PyQt5-sip==12.9.0

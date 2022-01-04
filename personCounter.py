@@ -132,7 +132,7 @@ class PersonCounter(Scenario):
             # y += offset_y
             area = self.detection_area
             if x> area[0] and y > area[1] and ((x+w) <= (area[0]+area[2])) and ((y+h) <= (area[1]+area[3])):
-                print(f"x {(x) } w {w} area[0]{area[0]} area 2 {area[2]}")
+                # print(f"x {(x) } w {w} area[0]{area[0]} area 2 {area[2]}")
                 cv2.rectangle(self.vid_player.frame, (x, y), (x + w, y + h), dtc.color.value, dtc.rect_border_size.value)
 
         if self.operation_mode == 1:
