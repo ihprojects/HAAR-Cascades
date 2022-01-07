@@ -1,126 +1,56 @@
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 
-import detector
-import hogDetector
-import uiOptionsTab
+import detectorHOG, detectorHAAR
 
-# use functools.partial to pass parameters when event is fired
-# https://gis.stackexchange.com/questions/66616/connect-signal-to-function-with-arguments-python
-from functools import partial
-
-
-class OptionsTab(QWidget):
-    def __init__(self, detector_manager, detector):
+# QLineEdit { border: 1px solid white }
+class DetectorManager(QWidget):
+    available_detectors = {"HAAR Cascade": detectorHAAR.HAARCascades, "HOG": detectorHOG.HOGDetector}
+    def __init__(self, main_win):
         super().__init__()
-        self.ui = uiOptionsTab.Ui_Form()
-        self.ui.setupUi(self)
-        self.btn_add = self.ui.btn_add
-        self.detector_manager = detector_manager
-        self.detector = detector
-
-        # TODO implement some save function for settings
-        # self.ui.comboBox.addItem("Setting1")
-        # self.ui.comboBox.addItem("Setting2")
-
-        self.init_ui()
-        self.set_events()
-        self.q_color_dialog = QColorDialog()
-
-    def init_ui(self):
-        for prop in self.detector.tunable_params:
-            hor_layout = QHBoxLayout()
-            # self.ui.gridLayout.addLayout(hor_layout, -1,1)
-            self.ui.verticalLayout.addLayout(hor_layout, -1)
-
-            # self.ui.verticalLayout.insertLayout(-2, hor_layout)
-            hor_layout.addWidget(QLabel(prop.name))
-            if prop.type == "color":
-                widget = QPushButton()
-                hor_layout.addWidget(widget)
-
-                widget.clicked.connect(partial(self.value_change, widget, prop, "color"))
-
-            else:
-                if prop.type == float:
-                    widget = QDoubleSpinBox()
-                else:
-                    widget = QSpinBox()
-
-                widget.setMinimum(prop.min_value)
-                widget.setMaximum(prop.max_value)
-                hor_layout.addWidget(widget)
-
-                widget.valueChanged.connect(partial(self.value_change, widget, prop, "spin"))
-        self.ui.verticalLayout.addStretch()
-        # self.ui.gridLayout.a
-    # https://stackoverflow.com/questions/940555/pyqt-sending-parameter-to-slot-when-connecting-to-a-signal
-    # https://www.tutorialspoint.com/pyqt/pyqt_qspinbox_widget.htm
-    def value_change(self, widget, prop, widget_type):
-        if widget_type == "spin":
-            prop.value = widget.value()
-        # https://stackoverflow.com/questions/53690302/qcolordialoggetcolor-function-get-rgb-value-and-conver-to-hex
-        if widget_type == "color":
-            color = self.q_color_dialog.getColor()
-            self.q_color_dialog.selectedColor = color
-            q_rgb = color.rgb()
-            rgb = (qBlue(q_rgb), qGreen(q_rgb), qRed(q_rgb))    # order swapped, just opencv things
-            prop.value = rgb
-            widget.setStyleSheet(f"background-color: rgb({rgb[2]}, {rgb[1]}, {rgb[0]});")
-
-    def set_events(self):
-        self.btn_add.clicked.connect(self.detector_manager.add_detector)
-        self.ui.checkBox_active.stateChanged.connect(self.detector.toggle_active)
-
-
-class DetectorManager:
-    def __init__(self, tab_widget, wait4frame):
-        self.detectors = []
-        self.wait4frame = wait4frame
-        # self.btn_add = btn_add
-        self.tab_widget = tab_widget
-
-        self.set_events()
-
-        # TODO this will go horribly wrong
-        self.rect_colors = [[235, 10, 235], [240, 240, 10], [5, 240, 240], [5, 240, 240], [50, 40, 240], [50, 240, 140]]
-
-        self.selected_name = None
-        self.selected_conf_file = None
-        # self.add_detector('HAAR Full Body', 'data/haarcascade_fullbody.xml')
-        self.init_detectors()
-
-    def set_events(self):
-        # self.btn_add.clicked.connect(self.add_detector)
-        pass
-    # TODO these should be loaded from ui
-    def init_detectors(self):
-        # self.selected_name = 'HAAR Full Body'
-        # self.selected_conf_file = 'data/haarcascade_fullbody.xml'
-        # self.add_detector( )
-        # self.selected_name = 'HAAR face'
-        # self.selected_conf_file = 'data/haarcascade_frontalface_alt.xml'
-        # self.add_detector( )
-        # self.selected_name = 'HAAR Full Body'
-        # self.selected_conf_file = 'data/haarcascade_fullbody.xml'
-        # self.selected_name = 'yolo'
-        # self.selected_conf_file = None
+        self.detectors =[]
+        # self.addTab(detector.Detector("",""),"abc")
         # self.add_detector()
+        self.main_win = main_win
+        self.layout_main = QVBoxLayout(self)
+        self.tab_widget = QTabWidget()
+        self.layout_add = QHBoxLayout()
+        self.btn_add = QPushButton("Add")
+        self.c_box_select_detector = QComboBox()
+        self.c_box_class2find = QComboBox()
 
-        self.detectors.append(detector.HAARCascades(self.rect_colors[len(self.detectors)],
-                                                    QLabel(''), 'HAAR Full Body', 'data/haarcascade_fullbody.xml'))
-        self.tab_widget.addTab(OptionsTab(self, self.detectors[-1]), f"{len(self.detectors)} HAAR Body ")
-        self.detectors.append(detector.HAARCascades(self.rect_colors[len(self.detectors)],
-                                                    QLabel(''), 'HAAR Face', 'data/haarcascade_frontalface_alt.xml'))
-        self.tab_widget.addTab(OptionsTab(self, self.detectors[-1]), f"{len(self.detectors)} HAAR Face")
 
-        self.detectors.append(hogDetector.HOGDetector(self.rect_colors[len(self.detectors)],
-                                                    QLabel(''), 'HOG', ''))
-        self.tab_widget.addTab(OptionsTab(self, self.detectors[-1]), f"{len(self.detectors)} HOG")
+        self.layout_main.addWidget(self.tab_widget)
+        self.layout_main.addLayout(self.layout_add)
+
+        self.layout_add.addWidget(self.c_box_select_detector)
+        self.layout_add.addWidget(self.c_box_class2find)
+        self.layout_add.addStretch()
+        self.layout_add.addWidget(self.btn_add)
+
+        for dtc in self.available_detectors.keys():
+            self.c_box_select_detector.addItem(dtc, self.available_detectors[dtc])
+        self.fill_class_selection_box()
+        self.c_box_select_detector.currentIndexChanged.connect(self.select_detector)
+
+        self.btn_add.setStyleSheet("background-color: rgb(10, 94, 22)")#; color: rgb(0, 0, 0);")
+
+        self.btn_add.clicked.connect(self.add_detector)
+    def fill_class_selection_box(self):
+        for cls in self.c_box_select_detector.currentData().detectable_objects.keys():
+            self.c_box_class2find.addItem(cls, self.c_box_select_detector.currentData().detectable_objects[cls])
+
+    def select_detector(self):
+        self.c_box_class2find.clear()
+        self.fill_class_selection_box()
 
     def add_detector(self):
-        # https://stackoverflow.com/questions/68006651/pyqt5-how-to-addwidget-at-the-specific-position
-        label = QLabel('')
-        self.detectors.append(detector.HAARCascades(self.rect_colors[len(self.detectors)],
-                                                    label, self.selected_name, self.selected_conf_file))
-        self.tab_widget.addTab(OptionsTab(self, self.detectors[-1]), f"{self.selected_name} {len(self.detectors)}")
+        ref = self.c_box_select_detector.currentData()
+        dtc = ref(self.main_win,self.c_box_class2find.currentText(),self.c_box_class2find.currentData(), self.tab_widget)
+        self.tab_widget.addTab(dtc, self.c_box_select_detector.currentText())
+    def get_detectors(self):
+        # https://stackoverflow.com/questions/6167196/get-all-tabs-widgets-in-qtabwidget
+        detectors = []
+        for i in range(0,self.tab_widget.count()):
+            detectors.append(self.tab_widget.widget(i))
+        return detectors

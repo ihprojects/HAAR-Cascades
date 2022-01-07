@@ -46,7 +46,7 @@ class PersonCounter(Scenario):
         self.face_counter = 0
         # self._person_detector = person_counter
         self.detected_faces =[]
-
+        self.init_ui()
     def set_events(self):
         self.ui.comboBox_mode.currentIndexChanged.connect(self.change_mode)
 
@@ -67,7 +67,7 @@ class PersonCounter(Scenario):
         for i in range(2,4):
             self.sliders[i].setMinimum(0)
             self.sliders[i].setMaximum(self.vid_player.screen_size[i-2])
-            self.sliders[i].setValue(self.vid_player.screen_size[i-2]//2)
+            self.sliders[i].setValue(self.vid_player.screen_size[i-2])
         self.sliders[1].setInvertedAppearance(True)
 
     def set_detection_area(self):
