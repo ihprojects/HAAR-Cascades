@@ -6,7 +6,10 @@ import cv2
 import fileHandler
 import settings
 import detector
-
+import Statistic
+import Diagramm
+import CalendarUI
+import ComboBoxUi
 
 class Scenario(QWidget):
     def __init__(self, video_player):
@@ -31,6 +34,13 @@ class PersonCounter(Scenario):
         self.ui.comboBox_mode.addItem("Calibration", 1)
         self.operation_mode = self.ui.comboBox_mode.currentData()
         self.sliders = [self.ui.sld_pos_x, self.ui.sld_pos_y, self.ui.sld_size_x, self.ui.sld_size_y]
+
+        self.cal = CalendarUI.MyDatePicker()
+        self.combo_date = ComboBoxUi.MyCombobox()
+        self.combo_layouts = ComboBoxUi.MyCombobox()
+        self.diagramm = Diagramm.Diagramm()
+        self.diagrammLayout = QVBoxLayout()
+
 
         self.add_random_stuff()
         self.detected_persons = 0
@@ -175,25 +185,59 @@ class PersonCounter(Scenario):
 
 
     ### this is how u can add ui elements and connect them to functions ###
-
+    # addWidget (self, QWidget, row, column, rowSpan, columnSpan, Qt.Alignment alignment = 0)
     def add_random_stuff(self):
-        #step1 create button
-        btn_test1= QPushButton("test1")
-        #step2 add to layout
-        self.ui.lay_hor.addWidget(btn_test1)
-        #step3 connect click event to function
-        btn_test1.clicked.connect(self.button_clicked)
+
+        # Layouts
+        command_layout = QVBoxLayout()
+        # plot_layout = QVBoxLayout()
+        self.ui.lay_hor.addLayout(command_layout)
+        self.ui.lay_hor.addLayout(self.diagrammLayout)
+
+
+
+
+        # Widgets
+
+        submit_btn = QPushButton("Submitt")
+        submit_btn.clicked.connect(self.button_clicked)
+
+        label = QLabel("Statistik")
+
+        # plot_layout.addWidget(label)
+        self.diagrammLayout.addWidget(label)
+        # plot_layout.addWidget(self.diagramm._widget)
+        command_layout.addWidget(self.combo_date.initUI(["day", "month", "year"], "Selected periode"))
+        command_layout.addWidget(self.cal.initUI("selected Date"))
+        command_layout.addWidget(
+            self.combo_layouts.initUI(["Layout 1", "Layout 2", "Layout 3", "Layout 4", "All"], "selected Layout"))
+        command_layout.addWidget(submit_btn)
+
+    # https://stackoverflow.com/questions/61449954/pyqt5-datepicker-popup
 
     def button_clicked(self):
-        #add other element
+        stati = Statistic.Statistic()
+        x_axis, y_axis = stati.getDataOfSpecificDate(self.cal._selectedDate, self.combo_date._selectedIndex,self.combo_layouts._selectedIndex)
 
-        #we can also add widgets at specific positons
-            new_label = QLabel()
-            new_label.setText(f"label_at_index2")
-            self.ui.lay_hor.insertWidget(2, new_label)
+        if self.diagramm.is_plotted:
+            self.diagramm.update()
 
-        #our layout now holds the following elements:
-        # index 0 : a vertical layout which holds sliders etc
-        # index 1: a invisible spacer; widegets on left side get pushed to the left, those on right side to the right
-        # index 2: the new creaTED QLabel
-        # index 3 : btn_test1
+
+            self.diagrammLayout.removeWidget( self.current_diag)
+            self.current_diag = self.diagramm.UiComponents(x_axis, y_axis, "Layouts", 0, 5)
+            self.diagrammLayout.addWidget(self.current_diag)
+            print("yo")
+        else:
+            self.diagramm.is_plotted = True
+            if self.combo_layouts._selectedIndex == 4:
+                self.current_diag = self.diagramm.UiComponents(x_axis, y_axis, "Layouts", 0, 5)
+                self.diagrammLayout.addWidget(self.current_diag)
+
+            else:
+                self.current_diag = self.diagramm.UiComponents(x_axis, y_axis, "day")
+                self.diagrammLayout.addWidget(self.current_diag)
+
+
+
+
+
