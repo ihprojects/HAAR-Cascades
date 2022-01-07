@@ -20,6 +20,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Detector STUDIO")
         self.video_file = ""
+        self.selected_cam = 0
         self.sigs = signals.Signals()
         # widgets
         self.detector_manager = detectorManager.DetectorManager(self.sigs)
@@ -89,7 +90,7 @@ class MainWindow(QMainWindow):
         self.video_player.show_frame()
 
     def activate_cam_mode(self):
-        self.video_player.load_video(0, "cam")
+        self.video_player.load_video(self.selected_cam, "cam")
         self.scenario.init_ui()
         self.video_player.play()
 
