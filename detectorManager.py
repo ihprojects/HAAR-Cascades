@@ -1,41 +1,52 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+from random import randint
 
 import detectorHOG, detectorHAAR
 
-# QLineEdit { border: 1px solid white }
+
 class DetectorManager(QWidget):
-    available_detectors = {"HAAR Cascade": detectorHAAR.HAARCascades, "HOG": detectorHOG.HOGDetector}
-    def __init__(self, main_win):
+
+    AVAILABLE_DETECTORS = {"HAAR Cascade": detectorHAAR.HAARCascades, "HOG": detectorHOG.HOGDetector}
+    FAVORITE_COLORS = [(230, 50, 20), (40, 220, 31), (10, 20, 244), (10, 170, 204)]
+
+    def __init__(self, signals):
         super().__init__()
-        self.detectors =[]
-        # self.addTab(detector.Detector("",""),"abc")
-        # self.add_detector()
-        self.main_win = main_win
+        # self.detectors = []
+        self.sigs = signals
+
         self.layout_main = QVBoxLayout(self)
-        self.tab_widget = QTabWidget()
-        self.layout_add = QHBoxLayout()
-        self.btn_add = QPushButton("Add")
+        self.tab_widget = QTabWidget()         # detectors are added as tabs to this widget
+
+        self.init_ui()
+
+
+    def init_ui(self):
+        #add comboboxes and add detector button
+        layout_add = QHBoxLayout()
         self.c_box_select_detector = QComboBox()
         self.c_box_class2find = QComboBox()
+        btn_add = QPushButton("Add")
+        btn_add.setStyleSheet("background-color: rgb(10, 94, 22)")
 
+        layout_add.addWidget(self.c_box_select_detector)
+        layout_add.addWidget(self.c_box_class2find)
+        layout_add.addStretch()
+        layout_add.addWidget(btn_add)
 
-        self.layout_main.addWidget(self.tab_widget)
-        self.layout_main.addLayout(self.layout_add)
-
-        self.layout_add.addWidget(self.c_box_select_detector)
-        self.layout_add.addWidget(self.c_box_class2find)
-        self.layout_add.addStretch()
-        self.layout_add.addWidget(self.btn_add)
-
-        for dtc in self.available_detectors.keys():
-            self.c_box_select_detector.addItem(dtc, self.available_detectors[dtc])
+        for dtc in self.AVAILABLE_DETECTORS.keys():
+            self.c_box_select_detector.addItem(dtc, self.AVAILABLE_DETECTORS[dtc])
         self.fill_class_selection_box()
+
+
+        #connect
         self.c_box_select_detector.currentIndexChanged.connect(self.select_detector)
+        btn_add.clicked.connect(self.add_detector)
 
-        self.btn_add.setStyleSheet("background-color: rgb(10, 94, 22)")#; color: rgb(0, 0, 0);")
+        #add to main layout
+        self.layout_main.addWidget(self.tab_widget)
+        self.layout_main.addLayout(layout_add)
 
-        self.btn_add.clicked.connect(self.add_detector)
     def fill_class_selection_box(self):
         for cls in self.c_box_select_detector.currentData().detectable_objects.keys():
             self.c_box_class2find.addItem(cls, self.c_box_select_detector.currentData().detectable_objects[cls])
@@ -45,9 +56,16 @@ class DetectorManager(QWidget):
         self.fill_class_selection_box()
 
     def add_detector(self):
+        if self.tab_widget.count() < len(self.FAVORITE_COLORS):
+            color = self.FAVORITE_COLORS[self.tab_widget.count()]
+        else:
+            color = (randint(0, 255), randint(0, 255), randint(0, 255))
         ref = self.c_box_select_detector.currentData()
-        dtc = ref(self.main_win,self.c_box_class2find.currentText(),self.c_box_class2find.currentData(), self.tab_widget)
+        dtc = ref(self.sigs, self.c_box_class2find.currentText(),self.c_box_class2find.currentData(),
+                  self.tab_widget, color)
         self.tab_widget.addTab(dtc, self.c_box_select_detector.currentText())
+        self.tab_widget.setCurrentWidget(dtc)
+
     def get_detectors(self):
         # https://stackoverflow.com/questions/6167196/get-all-tabs-widgets-in-qtabwidget
         detectors = []

@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
+import signals
+
 
 class Video():
     def __init__(self, name, fps, total_frames):
@@ -11,7 +13,7 @@ class Video():
         self.total_frames = total_frames
 
 class VideoPlayer(QWidget):
-    def __init__(self, wait4frame, pls_open_file):
+    def __init__(self, signals):
         super().__init__()
         self.frame = None
         self.is_playing = False
@@ -21,9 +23,7 @@ class VideoPlayer(QWidget):
         self.screen_size = (1920, 1080)     #default screen size
         self.read_frame = self.read_frame_from_file
         self.current_frame = 1
-
-        self.wait4frame = wait4frame
-        self.open_file = pls_open_file
+        self.signals = signals
         self.cap = None
         self.init_ui()
 
@@ -61,6 +61,8 @@ class VideoPlayer(QWidget):
         self.btn_stop.clicked.connect(self.stop)
         self.slider.sliderPressed.connect(self.pause)
         self.slider.sliderReleased.connect(self.set_frame)
+        self.signals.pls_pause.connect(self.pause)
+        self.signals.pls_resume.connect(self.play)
 
 
 
@@ -72,21 +74,23 @@ class VideoPlayer(QWidget):
 
     def pause(self):
         self.is_playing = False
-        self.wait4frame.stop()
+        self.signals.wait4frame.stop()
         self.btn_play_pause.setText("Play")
 
     def play(self):
         if self.is_ready:
             self.is_playing = True
-            self.wait4frame.start(int((1 / self.fps) * 1000))
+            self.signals.wait4frame.start(int((1 / self.fps) * 1000))
             self.btn_play_pause.setText("Pause")
         else:
-            self.open_file.emit()
+            # self.open_file.emit()
+            self.signals.pls_open_file.emit()
+
     def stop(self):
         if self.cap:
             self.slider.setValue(0)
             self.set_frame()
-            self.wait4frame.stop()
+            self.signals.wait4frame.stop()
             self.is_playing = False
             self.btn_play_pause.setText("Play")
 

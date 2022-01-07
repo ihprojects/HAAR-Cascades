@@ -6,10 +6,10 @@ import dlib
 class HOGDetector(detector.Detector):
     detectable_objects = {"Face" : dlib.get_frontal_face_detector}
 
-    def __init__(self, main_win, name, init_arg, tab_widget):
-        super().__init__(main_win, name, init_arg, tab_widget)
+    def __init__(self, signals, name, init_arg, tab_widget, color):
+        super().__init__(signals, name, init_arg, tab_widget, color)
         self.detector = init_arg()
-        self.add_props()
+        self.init_ui()
     def get_rects(self, frame):
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         im = np.float32(gray_frame) / 255.0

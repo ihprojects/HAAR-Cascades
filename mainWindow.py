@@ -5,7 +5,7 @@ from PyQt5.QtCore import *
 import videoPlayer
 import detectorManager
 import personCounter
-import settings
+import signals
  # use functools.partial to pass parameters when event is fired
 # https://gis.stackexchange.com/questions/66616/connect-signal-to-function-with-arguments-python
 from functools import partial
@@ -16,26 +16,18 @@ class MainWindow(QMainWindow):
     style_sheet_global = "background-color: rgb(70, 70, 70); color: rgb(209, 209, 209);"
     style_sheet_widgets = "background-color: rgb(52, 52, 52);"
 
-    #custom signals
-    pls_pause = pyqtSignal() #must be done outside of constructor: https://coderedirect.com/questions/318779/pyqt4-qtcore-pyqtsignal-object-has-no-attribute-connect
-    pls_resume = pyqtSignal()
-    pls_open_file = pyqtSignal()
-    wait4frame = QTimer()   # timer to fire time based event
-
-
     def __init__(self):
         super().__init__()
 
         self.video_file = ""
-
+        self.sigs = signals.Signals()
         # widgets
-        self.detector_manager = detectorManager.DetectorManager(self)
-        self.video_player = videoPlayer.VideoPlayer(self.wait4frame, self.pls_open_file)
+        self.detector_manager = detectorManager.DetectorManager(self.sigs)
+        self.video_player = videoPlayer.VideoPlayer( self.sigs)
         self.scenario = personCounter.PersonCounter(self.video_player)
 
-        self.init_ui()
 
-        # self.video_player.load_video(self.video_file, "file")
+        self.init_ui()
         self.show()
 
     def init_ui(self):
@@ -77,14 +69,12 @@ class MainWindow(QMainWindow):
 
 
         #connect signals
-        self.pls_pause.connect(self.video_player.pause)
-        self.pls_resume.connect(self.video_player.play)
         self.cam_mode_action.triggered.connect(self.activate_cam_mode)
         self.file_mode_action.triggered.connect(self.activate_file_mode)
         self.select_video_file_action.triggered.connect(self.open_video_file)
-        self.pls_open_file.connect(self.open_video_file)
+        self.sigs.pls_open_file.connect(self.open_video_file)
 
-        self.wait4frame.timeout.connect(self.run)
+        self.sigs.wait4frame.timeout.connect(self.run)
 
 
 
@@ -110,6 +100,7 @@ class MainWindow(QMainWindow):
         else:
             self.video_player.load_video(self.video_file, "file")
             self.video_player.play()
+
     def open_video_file(self):
         self.video_player.stop()
         self.video_file = QFileDialog.getOpenFileName(self, "Open file")[0]
@@ -117,9 +108,8 @@ class MainWindow(QMainWindow):
             self.video_player.load_video(self.video_file, "file")
             self.video_player.play()
             self.scenario.init_ui()
+
     # TODO add some hoykeys
-
-
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_K:
             self.video_player.play_pause()
