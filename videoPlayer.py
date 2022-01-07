@@ -94,6 +94,8 @@ class VideoPlayer(QWidget):
             self.signals.wait4frame.stop()
             self.is_playing = False
             self.btn_play_pause.setText("Play")
+            self.read_frame()
+            self.show_frame()
 
     def load_video(self, input_type, mode):
         if mode == "cam":

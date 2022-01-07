@@ -124,8 +124,8 @@ class Ui_Form(object):
         self.verticalLayout.addLayout(self.horizontalLayout_5)
         self.horizontalLayout_4.addLayout(self.verticalLayout)
         self.lay_hor.addWidget(self.frame_2)
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.lay_hor.addItem(spacerItem5)
+        # spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        # self.lay_hor.addItem(spacerItem5)
         self.horizontalLayout_3.addLayout(self.lay_hor)
         self.horizontalLayout.addWidget(self.frame)
 
