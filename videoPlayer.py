@@ -32,6 +32,7 @@ class VideoPlayer(QWidget):
 
         #screen
         self.screen = QLabel()
+        self.screen.setStyleSheet("background-color: rgb(0, 0, 0);")
         self.screen.setMinimumSize(QSize(800, 450))
         self.screen.setMaximumSize(QSize(800, 450))
 
