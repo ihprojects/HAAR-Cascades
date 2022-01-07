@@ -30,7 +30,7 @@ class DetectorParameter:
 
         if self.name_label.text() == "Color":
             self.ui_element.clicked.connect(self.change_color_value)
-            self.ui_element.setStyleSheet(f"background-color: rgb({value[0]}, {value[1]}, {value[2]});")
+            self.ui_element.setStyleSheet(f"background-color: rgb({value[2]}, {value[1]}, {value[0]});")
 
         self.name_label.setMinimumSize(QSize(self.MIN_WIDTH_LABEL, 0))
         self.ui_element.setMinimumSize(QSize(self.MIN_WIDTH_WIDGET, 0))

@@ -25,6 +25,7 @@ class VideoPlayer(QWidget):
         self.current_frame = 1
         self.signals = signals
         self.cap = None
+
         self.init_ui()
 
     def init_ui(self):
@@ -124,8 +125,7 @@ class VideoPlayer(QWidget):
         self.pause()
         self.current_frame = self.slider.sliderPosition()
         self.cap.set(1, self.current_frame)  # flag = 1 to set frame position
-        self.read_frame()
-        self.show_frame()
+        self.play()
 
 
     def read_frame_from_file(self):
