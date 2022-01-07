@@ -18,7 +18,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-
+        self.setWindowTitle("Detector STUDIO")
         self.video_file = ""
         self.sigs = signals.Signals()
         # widgets
