@@ -1,10 +1,10 @@
 import detector
 import cv2
 import numpy as np
-import dlib
+
 
 class HOGDetector(detector.Detector):
-    detectable_objects = {"Face" : dlib.get_frontal_face_detector}
+    detectable_objects = None#{"Face" : #lib.get_frontal_face_detector}
 
     def __init__(self, main_win, name, init_arg, tab_widget):
         super().__init__(main_win, name, init_arg, tab_widget)

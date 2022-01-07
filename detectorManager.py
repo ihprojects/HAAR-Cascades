@@ -5,7 +5,7 @@ import detectorHOG, detectorHAAR
 
 # QLineEdit { border: 1px solid white }
 class DetectorManager(QWidget):
-    available_detectors = {"HAAR Cascade": detectorHAAR.HAARCascades, "HOG": detectorHOG.HOGDetector}
+#    available_detectors = {"HAAR Cascade": detectorHAAR.HAARCascades, "HOG": detectorHOG.HOGDetector}
     def __init__(self, main_win):
         super().__init__()
         self.detectors =[]
@@ -28,10 +28,13 @@ class DetectorManager(QWidget):
         self.layout_add.addStretch()
         self.layout_add.addWidget(self.btn_add)
 
+        '''''
+
+
         for dtc in self.available_detectors.keys():
             self.c_box_select_detector.addItem(dtc, self.available_detectors[dtc])
         self.fill_class_selection_box()
-        self.c_box_select_detector.currentIndexChanged.connect(self.select_detector)
+        self.c_box_select_detector.currentIndexChanged.connect(self.select_detector)'''
 
         self.btn_add.setStyleSheet("background-color: rgb(10, 94, 22)")#; color: rgb(0, 0, 0);")
 
