@@ -41,12 +41,7 @@ class PersonCounter(Scenario):
         #self.diagramm = graphPlotter.GraphPlotter()
         self.diagrammLayout = QVBoxLayout()
         self.diagramm = graphPlotter.GraphPlotter(self.diagrammLayout)
-
-
-
         self._layout =1
-
-
         self.add_random_stuff()
 
 
