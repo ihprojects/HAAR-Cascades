@@ -7,10 +7,9 @@ import fileHandler
 import settings
 import detector
 import Statistic
-import graphPlotter
+import Diagramm
 import CalendarUI
 import ComboBoxUi
-import pyqtgraph as pg
 
 class Scenario(QWidget):
     def __init__(self, video_player):
@@ -39,16 +38,14 @@ class PersonCounter(Scenario):
         self.cal = CalendarUI.MyDatePicker()
         self.combo_date = ComboBoxUi.MyCombobox()
         self.combo_layouts = ComboBoxUi.MyCombobox()
-
+        self.diagramm = Diagramm.Diagramm()
         self.diagrammLayout = QVBoxLayout()
-        self.diagramm = graphPlotter.GraphPlotter(self.diagrammLayout)
-        # self.diagrammLayout.addWidget(self.diagramm)
 
 
         self.add_random_stuff()
         self.detected_persons = 0
 
-        self.detection_area = (0, 0, self.vid_player.frame_size[1], self.vid_player.frame_size[0])
+        self.detection_area = (0, 0, self.vid_player.screen_size[1], self.vid_player.screen_size[0])
         self.detection_area_color = (200,100,50)
         self.logging_table = []
         self.operation_mode = 2
@@ -74,13 +71,13 @@ class PersonCounter(Scenario):
     def init_ui(self):
         for i in range(2):
             self.sliders[i].setMinimum(0)
-            self.sliders[i].setMaximum(self.vid_player.frame_size[i])
-            self.sliders[i].setValue(self.vid_player.frame_size[i] // 2)
+            self.sliders[i].setMaximum(self.vid_player.screen_size[i])
+            self.sliders[i].setValue(self.vid_player.screen_size[i]//2)
 
         for i in range(2,4):
             self.sliders[i].setMinimum(0)
-            self.sliders[i].setMaximum(self.vid_player.frame_size[i - 2])
-            self.sliders[i].setValue(self.vid_player.frame_size[i - 2])
+            self.sliders[i].setMaximum(self.vid_player.screen_size[i-2])
+            self.sliders[i].setValue(self.vid_player.screen_size[i-2])
         self.sliders[1].setInvertedAppearance(True)
 
     def set_detection_area(self):
@@ -196,10 +193,6 @@ class PersonCounter(Scenario):
         # plot_layout = QVBoxLayout()
         self.ui.lay_hor.addLayout(command_layout)
         self.ui.lay_hor.addLayout(self.diagrammLayout)
-
-
-
-
 
         # Widgets
 
