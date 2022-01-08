@@ -42,6 +42,9 @@ class PersonCounter(Scenario):
         self.diagrammLayout = QVBoxLayout()
 
 
+        self._layout =1
+
+
         self.add_random_stuff()
         self.detected_persons = 0
 
@@ -54,7 +57,6 @@ class PersonCounter(Scenario):
 
         self.none_face_counter = 0
         self.face_counter = 0
-        # self._person_detector = person_counter
         self.detected_faces =[]
         self.init_ui()
     def set_events(self):
@@ -80,66 +82,72 @@ class PersonCounter(Scenario):
             self.sliders[i].setValue(self.vid_player.screen_size[i-2])
         self.sliders[1].setInvertedAppearance(True)
 
-    def set_detection_area(self):
-        pass
-
     # @logging_table.setter
-    def logging_table(self, count):
-        x = str(datetime.datetime.now().time())
-        y = str(datetime.datetime.now().date())
-        self._logging_table.append([str(count), x, y])
+    def set_logging_table(self, looking_time):
+        date_time = str(datetime.datetime.now())
+        self._logging_table.append([looking_time,date_time,self._layout])
 
 
     def detec_person(self, faces, detected_faces):
 
         offset_x, offset_y, offset_width, offset_height = self.detection_area
+        len_detected_faces = len(detected_faces)
+        temp_list = []
+        x_range =30
+        y_range = offset_y
 
-        number_of_person_old = self.detected_persons
 
         for (x, y, w, h) in faces:
             diff_x = None
             diff_y = None
 
-            if len(detected_faces) != 0:
-                for (x_old, y_old) in detected_faces:
+            if len_detected_faces != 0:
+                for i,(x_old, y_old,time_stamp1) in enumerate(detected_faces):
                     x_difference = abs(x_old - x)
-
-                    if x_difference < 30:
+                    if x_difference < x_range:
                         diff_y = abs(y - y_old)
                         diff_x = abs(x - y_old)
+                        temp_list+= [i]
                         break
 
             if diff_y == None and diff_x == None:
                 diff_x = offset_width + 1
                 diff_y = offset_height + 1
 
-            if diff_x > offset_width // 3 and diff_y > offset_y:
-                detected_faces += [(x, y)]
+            if diff_x > x_range and diff_y > y_range:
+                detected_faces += [(x, y,datetime.datetime.now())]
                 self.detected_persons += 1
-                # self.logging_table = self.detected_persons - number_of_person_old
 
-# passing the video player and detector objects as arguments
+        if len(temp_list > 0):
+
+            reference_set = {i for i in range(0, detected_faces)}
+            temp_set = set(temp_list)
+            difference_set = reference_set.difference(temp_set)
+
+            for i in difference_set:
+                self.set_logging_table(
+                    datetime.timedelta.total_seconds(datetime.datetime.now() - detected_faces[i][2]))
+                detected_faces.remove(detected_faces[i])
+
+    # passing the video player and detector objects as arguments
     def process_frame(self, dtc):
-
-        offset_x, offset_y, width_detection_area, height_detection_area = self.detection_area
-        #sub_frame = vid_player.frame[offset_y:height_detection_area + offset_y, offset_x:width_detection_area + offset_x, :]
-        # gray = cv2.cvtColor(sub_frame, cv2.COLOR_BGR2GRAY)
-        # faces = self._person_detector.cascade_classifier.detectMultiScale(gray, 1.5, 4)
 
         if len(dtc.rects) == 0:
             self.none_face_counter += 1
             self.face_counter = 0
         else:
             self.face_counter += 1
-            none_face_counter = 0
+            self.none_face_counter = 0
 
         if self.none_face_counter == self.vid_player.fps:
-            none_face_counter = 0
+            self.none_face_counter = 0
+
+            if len(self.detected_faces)>0:
+                for face in self.detected_faces:
+                    self.set_logging_table(datetime.timedelta.total_seconds(datetime.datetime.now()-face[2]))
             self.detected_faces = []
 
         for x, y, w, h in dtc.rects:
-            # x += offset_x
-            # y += offset_y
             area = self.detection_area
             if x> area[0] and y > area[1] and ((x+w) <= (area[0]+area[2])) and ((y+h) <= (area[1]+area[3])):
                 # print(f"x {(x) } w {w} area[0]{area[0]} area 2 {area[2]}")
@@ -147,19 +155,14 @@ class PersonCounter(Scenario):
 
         if self.operation_mode == 1:
             self.draw_detection_area()
-        # x_center + width // 2,
-        # y_center + height // 2)
 
         elif self.operation_mode == 2:
             if self.face_counter >= self.vid_player.fps:
                 self.detec_person(dtc.rects, self.detected_faces)
 
-        elif self.person_detector.operation_mode == 3:
-            pass
-
         # export the logging data
         if len(self.logging_table) >= 50:
-            is_successful = fileHandler.FileHandler.create_csv(settings.FILE_PATH_CSV, self._person_detector.logging_table)
+            is_successful = fileHandler.FileHandler.create_csv(settings.FILE_PATH_CSV, self.logging_table)
             if is_successful:
                 self.logging_table = []
 
@@ -181,8 +184,6 @@ class PersonCounter(Scenario):
                                max(0, y_center - height//2),
                                width,
                                height)
-
-
 
     ### this is how u can add ui elements and connect them to functions ###
     # addWidget (self, QWidget, row, column, rowSpan, columnSpan, Qt.Alignment alignment = 0)
@@ -221,12 +222,9 @@ class PersonCounter(Scenario):
 
         if self.diagramm.is_plotted:
             self.diagramm.update()
-
-
             self.diagrammLayout.removeWidget( self.current_diag)
             self.current_diag = self.diagramm.UiComponents(x_axis, y_axis, "Layouts", 0, 5)
             self.diagrammLayout.addWidget(self.current_diag)
-            print("yo")
         else:
             self.diagramm.is_plotted = True
             if self.combo_layouts._selectedIndex == 4:

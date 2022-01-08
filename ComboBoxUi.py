@@ -29,12 +29,12 @@ class MyCombobox(QWidget):
 
         self.cb.currentIndexChanged.connect(self.selectionchange)
 
-        return widget#self.cb
+        return widget
 
     def selectionchange(self,i):
         self._selectedIndex = i
         self._selectedText = self.cb.currentText()
-        print(self._selectedText)
+
 
 
 

@@ -16,11 +16,10 @@ class Statistic:
         _dataframe = self.get_dataframe_from_csv(self.filepath, self.col_names)
         self.dataframe = self.set_dtype_coloumns(_dataframe, self.col_names)
 
-
     def fill_DataTable(self):
         dataTable = []
 
-        for m in range(1,13):
+        for m in range(1, 13):
             for i in self.detectDaysOfaMonth(f"2022-{m}-01"):
                 for h in range(9, 21):
                     zufall = random.randint(30, 50)
@@ -31,7 +30,8 @@ class Statistic:
                     time_1 = timedelta.total_seconds(
                         datetime.timedelta(minutes=random.randint(0, 6), seconds=random.randint(0, 59)))
 
-                    dataTable.append((str(time_1), str(date), random.randint(1,4)))  # dataTable.append((str(time_1), str(date.time()), str(date)))
+                    dataTable.append((str(time_1), str(date), random.randint(1,
+                                                                             4)))
 
         return dataTable
 
@@ -52,8 +52,8 @@ class Statistic:
             return False
 
     def get_dataframe_from_csv(self, filepath, col_name):
-        df = pd.read_csv(filepath, sep='\t', header=None, names=col_name)
-        return df
+        dataframe = pd.read_csv(filepath, sep='\t', header=None, names=col_name)
+        return dataframe
 
     def set_dtype_coloumns(self, dataframe, col_name):
         df2 = dataframe.copy()
@@ -69,33 +69,31 @@ class Statistic:
         x_axis = None
         y_axis = None
 
-
-
-        if index_layout_option<4:
+        if index_layout_option < 4:
             # Data from the selected year
             if index_dateOption == 2:
-                x_axis, y_axis = self.axisYearData(date_time,index_layout_option)
+                x_axis, y_axis = self.axisYearData(date_time, index_layout_option)
 
             # Data from the selected month of the year
             elif index_dateOption == 1:
-                x_axis, y_axis = self.axisMonthData(date_time,index_layout_option)
+                x_axis, y_axis = self.axisMonthData(date_time, index_layout_option)
 
             # Data from the selected date for each hour
             elif index_dateOption == 0:
                 df = self.dataframe.loc[date_time]
-                x_axis, y_axis = self.axisDailyData(df,index_layout_option)
+                x_axis, y_axis = self.axisDailyData(df, index_layout_option)
 
 
         elif index_layout_option == 4:
             x_axis, y_axis = self.compareLayouts(4)
 
-
         return x_axis, y_axis
 
-    def axisDailyData(self,dataframe,layout):
-        # x_axis = [(f"{i}:00:00", f"{i + 1}:00:00") for i in range(0, 23)]
+    def axisDailyData(self, dataframe, layout):
+
+        dummy_df = dataframe[self.dataframe[self.col_names[2]] == layout]
         x_axis = [i for i in range(0, 23)]
-        data = [dataframe.between_time(f"{i}:00:00", f"{i + 1}:00:00") for i in range(0, 23)]
+        data = [dummy_df.between_time(f"{i}:00:00", f"{i + 1}:00:00") for i in range(0, 23)]
         y_axis = []
         for df in data:
             mean = df[self.col_names[0]].mean()
@@ -105,7 +103,7 @@ class Statistic:
                 y_axis.append(mean)
         return x_axis, y_axis
 
-    def axisMonthData(self, date_time,layout):
+    def axisMonthData(self, date_time, layout):
 
         # eperate date time in year, month, day
         y, m, d = date_time.split(sep="-")
@@ -116,7 +114,8 @@ class Statistic:
 
         for day in days:
             # select the dataframe
-            dummy_df = self.dataframe.loc[f"{y}-{m}-{day}"]
+            data_frame = self.dataframe[self.dataframe[self.col_names[2]] == layout]
+            dummy_df = data_frame.loc[f"{y}-{m}-{day}"]
             mean = dummy_df[self.col_names[0]].mean()
 
             if math.isnan(mean):
@@ -126,17 +125,17 @@ class Statistic:
 
         return days, y_axis
 
-    def axisYearData(self, date_time,layout):
+    def axisYearData(self, date_time, layout):
 
-        # eperate date time in year, month, day
+        # seperate date time in year, month, day
         y, m, d = date_time.split(sep="-")
         months = [i for i in range(1, 13)]
         y_axis = []
 
         for month in months:
             # select the dataframe
-            dummy_df = self.dataframe.loc[f"{y}-{month}"]
-
+            data_frame = self.dataframe[self.dataframe[self.col_names[2]] == layout]
+            dummy_df = data_frame.loc[f"{y}-{month}"]
             mean = dummy_df[self.col_names[0]].mean()
 
             if math.isnan(mean):
@@ -159,13 +158,13 @@ class Statistic:
 
         return day_numbers
 
-    def compareLayouts(self,number_of_Layouts):
+    def compareLayouts(self, number_of_Layouts):
 
-        x_axis = [i for i in range (1,number_of_Layouts+1)]
+        x_axis = [i for i in range(1, number_of_Layouts + 1)]
         y_axis = []
 
         for layout in x_axis:
-            dummy_df = self.dataframe[self.dataframe[self.col_names[2]]== layout]
+            dummy_df = self.dataframe[self.dataframe[self.col_names[2]] == layout]
             mean = dummy_df[self.col_names[0]].mean()
 
             if math.isnan(mean):
@@ -173,13 +172,4 @@ class Statistic:
             else:
                 y_axis += [mean]
 
-
-        return x_axis,y_axis
-
-
-
-
-
-
-
-
+        return x_axis, y_axis

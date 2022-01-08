@@ -6,7 +6,7 @@ from pyqtgraph.Qt import QtCore, QtGui
 #"Quelle: https://de.acervolima.com/pyqtgraph-hinzufugen-von-qt-widgets-mit-dem-balkendiagramm/"
 # https://de.acervolima.com/einfuhrung-in-das-pyqtgraph-modul-in-python/
 
-class Diagramm(QMainWindow):
+class Diagramm(QWidget):
     def __init__(self):
         super().__init__()
 
@@ -34,7 +34,7 @@ class Diagramm(QMainWindow):
         layout = QGridLayout()
         self.widget.setLayout(layout)
         layout.addWidget(self.plot)
-        self.setCentralWidget(self.widget)
+       # self.setCentralWidget(self.widget)
 
         return self.widget
 

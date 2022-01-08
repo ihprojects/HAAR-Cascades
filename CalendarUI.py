@@ -19,8 +19,7 @@ class MyDatePicker(QWidget):
     def __init__(self):
         super().__init__()
         self._selectedDate = "2022-01-01"
-        #self.initUI()
-        #self.show()
+
 
     def initUI(self,title):
         widget = QWidget()
@@ -38,7 +37,7 @@ class MyDatePicker(QWidget):
         self.calendar.setMaximumDate(
             QDate(currentYear, currentMonth + 1, calendar.monthrange(currentYear, currentMonth)[1]))
 
-#        self.calendar.setSelectedDate(QDate(currentYear, currentMonth, 1))
+        #self.calendar.setSelectedDate(QDate(currentYear, currentMonth, 1))
 
         #self.calendar.clicked.connect(self.get_selected_Date)
         self.calendar.dateChanged.connect(self.get_selected_Date)
