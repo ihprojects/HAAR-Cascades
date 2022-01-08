@@ -9,7 +9,6 @@ import mainWindow
 from PyQt5.QtWidgets import *
 
 app = QApplication(sys.argv)
-# window = Window.Window(videopath)
 window = mainWindow.MainWindow()
 sys.exit(app.exec())
 

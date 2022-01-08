@@ -12,7 +12,6 @@ class DetectorManager(QWidget):
 
     def __init__(self, signals):
         super().__init__()
-        # self.detectors = []
         self.sigs = signals
 
         self.layout_main = QVBoxLayout(self)
@@ -22,10 +21,11 @@ class DetectorManager(QWidget):
 
 
     def init_ui(self):
-        #add comboboxes and add detector button
+
         layout_add = QHBoxLayout()
         self.c_box_select_detector = QComboBox()
         self.c_box_class2find = QComboBox()
+
         btn_add = QPushButton("Add")
         btn_add.setStyleSheet("background-color: rgb(10, 94, 22)")
 
@@ -40,7 +40,7 @@ class DetectorManager(QWidget):
 
 
         #connect
-        self.c_box_select_detector.currentIndexChanged.connect(self.select_detector)
+        self.c_box_select_detector.currentIndexChanged.connect(self.fill_class_selection_box)
         btn_add.clicked.connect(self.add_detector)
 
         #add to main layout
@@ -48,12 +48,9 @@ class DetectorManager(QWidget):
         self.layout_main.addLayout(layout_add)
 
     def fill_class_selection_box(self):
+        self.c_box_class2find.clear()
         for cls in self.c_box_select_detector.currentData().detectable_objects.keys():
             self.c_box_class2find.addItem(cls, self.c_box_select_detector.currentData().detectable_objects[cls])
-
-    def select_detector(self):
-        self.c_box_class2find.clear()
-        self.fill_class_selection_box()
 
     def add_detector(self):
         if self.tab_widget.count() < len(self.FAVORITE_COLORS):
@@ -61,6 +58,7 @@ class DetectorManager(QWidget):
         else:
             color = (randint(0, 255), randint(0, 255), randint(0, 255))
         ref = self.c_box_select_detector.currentData()
+        #Detector init signature: def __init__(self, signals, name, init_arg, tab_widget, color)
         dtc = ref(self.sigs, self.c_box_class2find.currentText(),self.c_box_class2find.currentData(),
                   self.tab_widget, color)
         self.tab_widget.addTab(dtc, self.c_box_select_detector.currentText())

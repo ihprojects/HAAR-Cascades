@@ -37,6 +37,7 @@ class DetectorParameter:
 
     def change_value(self):
         self.value =self.ui_element.value()
+
     def change_color_value(self):
         self.sigs.pls_pause.emit()
 
@@ -64,12 +65,9 @@ class Detector(QWidget):
         # parameters in this list get an ui element to tune them
         self.tunable_params =[self.color, self.rect_border_size]
 
-
         self.layout_main = QVBoxLayout(self)
-
         self.layout_param_outer = QHBoxLayout()
         self.layout_param_inner = QVBoxLayout()
-
 
         self.btn_destroy = QPushButton("x")
         self.btn_destroy.clicked.connect(self.destroy)
@@ -94,8 +92,9 @@ class Detector(QWidget):
         check_box_active.setChecked(True)
         check_box_active.stateChanged.connect(self.toggle_active)
 
-
-
+        # tunable parameter ui elemnts
+        self.layout_param_outer.addLayout(self.layout_param_inner)
+        self.layout_param_outer.addStretch()
         for prop in self.tunable_params:
             lay_hor = QHBoxLayout()
             self.layout_param_inner.addLayout(lay_hor)
@@ -109,11 +108,9 @@ class Detector(QWidget):
         self.layout_main.addLayout(layout_for_destroy_button)
         self.layout_main.addWidget(line)
         self.layout_main.addWidget(check_box_active)
-
         self.layout_main.addSpacing(50)
         self.layout_main.addLayout(self.layout_param_outer)
-        self.layout_param_outer.addLayout(self.layout_param_inner)
-        self.layout_param_outer.addStretch()
+
         self.layout_main.addStretch()
 
 
@@ -126,9 +123,7 @@ class Detector(QWidget):
     def init_detector(self, arg):
         pass
     def toggle_active(self):
-        if self.is_active:
-            self.is_active = False
-        else:
-            self.is_active = True
+        self.is_active = not self.is_active
+
 
 

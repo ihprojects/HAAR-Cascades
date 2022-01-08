@@ -20,7 +20,7 @@ class VideoPlayer(QWidget):
         self.video = None
         self.is_ready = False
         self.fps = 30
-        self.screen_size = (1920, 1080)     #default screen size
+        self.frame_size = (1920, 1080)     # default screen size
         self.read_frame = self.read_frame_from_file
         self.current_frame = 1
         self.signals = signals
@@ -49,7 +49,7 @@ class VideoPlayer(QWidget):
         self.layout_buttons.addStretch()
 
         self.slider = QSlider()
-        self.slider.setOrientation(Qt.Horizontal)
+        self.slider.setOrientation(Qt.Orientation.Horizontal)
 
 
         self.layout_main.addWidget(self.screen)
@@ -84,7 +84,6 @@ class VideoPlayer(QWidget):
             self.signals.wait4frame.start(int((1 / self.fps) * 1000))
             self.btn_play_pause.setText("Pause")
         else:
-            # self.open_file.emit()
             self.signals.pls_open_file.emit()
 
     def stop(self):
@@ -97,28 +96,29 @@ class VideoPlayer(QWidget):
             self.read_frame()
             self.show_frame()
 
-    def load_video(self, input_type, mode):
+    def load_video(self, input, mode):
         if mode == "cam":
-            self.cap = cv2.VideoCapture(input_type)
+            self.cap = cv2.VideoCapture(input)
             self.read_frame = self.read_frame_from_cam
+
             self.slider.hide()
             self.fps = 30
             self.read_frame()
-            self.screen_size = (self.frame.shape[1], self.frame.shape[0])
+            self.frame_size = (self.frame.shape[1], self.frame.shape[0])
             self.is_ready = True
+
         if mode == "file":
-
-            self.cap = cv2.VideoCapture(input_type)
-
+            self.cap = cv2.VideoCapture(input)
             self.read_frame= self.read_frame_from_file
+
             # flag = 5 to get fps of video file ; flag = 7 to get n of all frames
-            self.video = Video(input_type, round(self.cap.get(5)), self.cap.get(7))
+            self.video = Video(input, round(self.cap.get(5)), self.cap.get(7))
             self.fps = self.video.fps
             self.slider.show()
             self.slider.setRange(1, self.video.total_frames)
 
             self.read_frame()
-            self.screen_size = (self.frame.shape[1], self.frame.shape[0])
+            self.frame_size = (self.frame.shape[1], self.frame.shape[0])
             self.is_ready = True
 
 
@@ -141,6 +141,8 @@ class VideoPlayer(QWidget):
 
 
     def show_frame(self):
+        # https://stackoverflow.com/questions/53993333/how-to-set-the-pixmap-and-text-to-qlabel-by-using-pyqt4
+
         # convert to img
         height, width, channel = self.frame.shape
         bytes_per_line = channel * width
