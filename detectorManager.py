@@ -26,7 +26,6 @@ class DetectorManager(QWidget):
         self.c_box_select_detector = QComboBox()
         self.c_box_class2find = QComboBox()
 
-
         btn_add = QPushButton("Add")
         btn_add.setStyleSheet("background-color: rgb(10, 94, 22)")
 
@@ -39,12 +38,11 @@ class DetectorManager(QWidget):
             self.c_box_select_detector.addItem(dtc, self.AVAILABLE_DETECTORS[dtc])
         self.fill_class_selection_box()
 
-
-        #connect
+        # connect
         self.c_box_select_detector.currentIndexChanged.connect(self.fill_class_selection_box)
         btn_add.clicked.connect(self.add_detector)
 
-        #add to main layout
+        # add to main layout
         self.layout_main.addWidget(self.tab_widget)
         self.layout_main.addLayout(layout_add)
 
@@ -60,7 +58,7 @@ class DetectorManager(QWidget):
             color = (randint(0, 255), randint(0, 255), randint(0, 255))
         ref = self.c_box_select_detector.currentData()
 
-        #Detector init signature: def __init__(self, signals, name, init_arg, tab_widget, color)
+        # Detector init signature: def __init__(self, signals, name, init_arg, tab_widget, color)
         # need tab widget reference to allow detector to remove itself
         dtc = ref(self.sigs, self.c_box_class2find.currentText(),self.c_box_class2find.currentData(),
                   self.tab_widget, color)
