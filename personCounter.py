@@ -7,7 +7,7 @@ import fileHandler
 import settings
 import detector
 import Statistic
-import graphPlotter
+import Diagramm
 import CalendarUI
 import ComboBoxUi
 
@@ -38,6 +38,7 @@ class PersonCounter(Scenario):
         self.cal = CalendarUI.MyDatePicker()
         self.combo_date = ComboBoxUi.MyCombobox()
         self.combo_layouts = ComboBoxUi.MyCombobox()
+        self.diagramm = Diagramm.Diagramm()
         self.diagrammLayout = QVBoxLayout()
         self.diagramm = graphPlotter.GraphPlotter(self.diagrammLayout)
 
@@ -58,6 +59,7 @@ class PersonCounter(Scenario):
 
         self.none_face_counter = 0
         self.face_counter = 0
+        # self._person_detector = person_counter
         self.detected_faces =[]
         self.init_ui()
     def set_events(self):
@@ -83,6 +85,9 @@ class PersonCounter(Scenario):
             self.sliders[i].setValue(self.vid_player.screen_size[i-2])
         self.sliders[1].setInvertedAppearance(True)
 
+    def set_detection_area(self):
+        pass
+
     # @logging_table.setter
     def set_logging_table(self, looking_time):
         date_time = str(datetime.datetime.now())
@@ -97,6 +102,7 @@ class PersonCounter(Scenario):
         x_range =30
         y_range = offset_y
 
+        number_of_person_old = self.detected_persons
 
         for (x, y, w, h) in faces:
             diff_x = None
@@ -132,6 +138,11 @@ class PersonCounter(Scenario):
 
     # passing the video player and detector objects as arguments
     def process_frame(self, dtc):
+
+        offset_x, offset_y, width_detection_area, height_detection_area = self.detection_area
+        #sub_frame = vid_player.frame[offset_y:height_detection_area + offset_y, offset_x:width_detection_area + offset_x, :]
+        # gray = cv2.cvtColor(sub_frame, cv2.COLOR_BGR2GRAY)
+        # faces = self._person_detector.cascade_classifier.detectMultiScale(gray, 1.5, 4)
 
         if len(dtc.rects) == 0:
             self.none_face_counter += 1
