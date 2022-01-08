@@ -90,8 +90,10 @@ class PersonCounter(Scenario):
 
     # @logging_table.setter
     def set_logging_table(self, looking_time):
-        date_time = str(datetime.datetime.now())
-        self.logging_table.append([looking_time,date_time,self._layout])
+        date_time = datetime.datetime.now().strftime('"%Y-%m-%d %H:%M:%S"')
+
+        if looking_time>1:
+            self.logging_table.append([looking_time,date_time,self._layout])
 
 
     def detec_person(self, faces, detected_faces):
@@ -132,20 +134,10 @@ class PersonCounter(Scenario):
             difference_set = reference_set.difference(temp_set)
             temp_value=0
             for i in difference_set:
-
-                try:
-                    self.set_logging_table(
-                        datetime.timedelta.total_seconds(datetime.datetime.now() - detected_faces[i][2]))
-                    detected_faces.remove(detected_faces[i-temp_value])
-                    temp_value+=1
-
-                except:
-                    print(i)
-
-
-
-
-
+                self.set_logging_table(
+                    datetime.timedelta.total_seconds(datetime.datetime.now() - detected_faces[i-temp_value][2]))
+                detected_faces.remove(detected_faces[i - temp_value])
+                temp_value += 1
 
     # passing the video player and detector objects as arguments
     def process_frame(self, dtc):

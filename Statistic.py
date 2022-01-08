@@ -6,13 +6,15 @@ import math
 import numpy as np
 import pandas as pd
 
+import settings
+
 
 class Statistic:
 
     def __init__(self):
-        self.filepath = 'text.csv'
+        self.filepath = settings.FILE_PATH_CSV
         self.col_names = ["looking_time", "date_time", "Layout"]
-        self.create_csv(self.filepath, self.fill_DataTable())
+        #self.create_csv(self.filepath, self.fill_DataTable())
         _dataframe = self.get_dataframe_from_csv(self.filepath, self.col_names)
         self.dataframe = self.set_dtype_coloumns(_dataframe, self.col_names)
 
@@ -81,7 +83,7 @@ class Statistic:
             # Data from the selected date for each hour
             elif index_dateOption == 0:
                 df = self.dataframe.loc[date_time]
-                x_axis, y_axis = self.axisDailyData(df, index_layout_option)
+                x_axis, y_axis = self.axisDailyData(df, index_layout_option+1)
 
 
         elif index_layout_option == 4:
@@ -90,7 +92,6 @@ class Statistic:
         return x_axis, y_axis
 
     def axisDailyData(self, dataframe, layout):
-
         dummy_df = dataframe[self.dataframe[self.col_names[2]] == layout]
         x_axis = [i for i in range(0, 23)]
         data = [dummy_df.between_time(f"{i}:00:00", f"{i + 1}:00:00") for i in range(0, 23)]
