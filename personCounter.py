@@ -48,6 +48,20 @@ class PersonCounter(Scenario):
 
 
         self.add_random_stuff()
+
+
+        self.cbox = QComboBox()
+        self.cbox.addItem("Layout 1",1)
+        self.cbox.addItem("Layout 2",2)
+        self.cbox.addItem("Layout 3",3)
+        self.cbox.addItem("Layout 4",4)
+        self.ui.verticalLayout.addWidget(self.cbox)
+        self.cbox.currentIndexChanged.connect(self.change_layout)
+
+
+
+
+
         self.detected_persons = 0
 
         self.detection_area = (0, 0, self.vid_player.screen_size[1], self.vid_player.screen_size[0])
@@ -86,13 +100,7 @@ class PersonCounter(Scenario):
             self.sliders[i].setMaximum(self.vid_player.screen_size[i-2])
             self.sliders[i].setValue(self.vid_player.screen_size[i-2])
         self.sliders[1].setInvertedAppearance(True)
-        self.cbox = QComboBox()
-        self.cbox.addItem("Layout 1",1)
-        self.cbox.addItem("Layout 2",2)
-        self.cbox.addItem("Layout 3",3)
-        self.cbox.addItem("Layout 4",4)
-        self.ui.verticalLayout.addWidget(self.cbox)
-        self.cbox.currentIndexChanged.connect(self.change_layout)
+
     def change_layout(self):
         self._layout = self.cbox.currentData()
         print(self._layout)
