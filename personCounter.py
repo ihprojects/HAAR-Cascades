@@ -7,7 +7,7 @@ import fileHandler
 import settings
 import detector
 import Statistic
-import Diagramm
+import graphPlotter
 import CalendarUI
 import ComboBoxUi
 
@@ -38,14 +38,15 @@ class PersonCounter(Scenario):
         self.cal = CalendarUI.MyDatePicker()
         self.combo_date = ComboBoxUi.MyCombobox()
         self.combo_layouts = ComboBoxUi.MyCombobox()
-        self.diagramm = Diagramm.Diagramm()
         self.diagrammLayout = QVBoxLayout()
+        self.diagramm = graphPlotter.GraphPlotter(self.diagrammLayout)
+
 
 
         self.add_random_stuff()
         self.detected_persons = 0
 
-        self.detection_area = (0, 0, self.vid_player.screen_size[1], self.vid_player.screen_size[0])
+        self.detection_area = (0, 0, self.vid_player.frame_size[1], self.vid_player.frame_size[0])
         self.detection_area_color = (200,100,50)
         self.logging_table = []
         self.operation_mode = 2
@@ -71,13 +72,13 @@ class PersonCounter(Scenario):
     def init_ui(self):
         for i in range(2):
             self.sliders[i].setMinimum(0)
-            self.sliders[i].setMaximum(self.vid_player.screen_size[i])
-            self.sliders[i].setValue(self.vid_player.screen_size[i]//2)
+            self.sliders[i].setMaximum(self.vid_player.frame_size[i])
+            self.sliders[i].setValue(self.vid_player.frame_size[i]//2)
 
         for i in range(2,4):
             self.sliders[i].setMinimum(0)
-            self.sliders[i].setMaximum(self.vid_player.screen_size[i-2])
-            self.sliders[i].setValue(self.vid_player.screen_size[i-2])
+            self.sliders[i].setMaximum(self.vid_player.frame_size[i-2])
+            self.sliders[i].setValue(self.vid_player.frame_size[i-2])
         self.sliders[1].setInvertedAppearance(True)
 
     def set_detection_area(self):
@@ -218,25 +219,6 @@ class PersonCounter(Scenario):
 
         self.diagramm.set_labels("Title", self.combo_date.cb.currentText(), "Duration")
         self.diagramm.draw_graph(x_axis, y_axis)
-        # self.diagrammLayout.addWidget(pg.plot())
-        # self.diagrammLayout.addWidget(Diagramm.Diagram(self.diagrammLayout))
-        # if self.diagramm.is_plotted:
-        #     # self.diagramm.update()
-        #
-        #     self.diagramm.draw_graph(x_axis, y_axis, "Layouts", 0, 5)
-        #     self.diagrammLayout.removeWidget( self.current_diag)
-        #     self.current_diag = self.diagramm.UiComponents(x_axis, y_axis, "Layouts", 0, 5)
-        #     self.diagrammLayout.addWidget(self.current_diag)
-        #     print("yo")
-        # else:
-        #     self.diagramm.is_plotted = True
-        #     if self.combo_layouts._selectedIndex == 4:
-        #         self.current_diag = self.diagramm.UiComponents(x_axis, y_axis, "Layouts", 0, 5)
-        #         self.diagrammLayout.addWidget(self.current_diag)
-        #
-        #     else:
-        #         self.current_diag = self.diagramm.UiComponents(x_axis, y_axis, "day")
-        #         self.diagrammLayout.addWidget(self.current_diag)
 
 
 
