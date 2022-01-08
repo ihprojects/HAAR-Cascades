@@ -1,16 +1,14 @@
 ## Overview
 
----
 
 Find the best detector for your object detection project.  
 Select multiple object detectors and compare their performance in real time.
 Adjust parameters to find the setup best suited to your task.   
 Allows video files and camera input.
 
-
+   
 ## Installation
 
----
 git clone https://github.com/ihprojects/HAAR-Cascades.git
 
 pip install -r requirements.txt
@@ -23,13 +21,12 @@ To avoid xcb version conflict using cv2, you can use opencv-python-headless inst
 see here:
 https://forum.qt.io/topic/119109/using-pyqt5-with-opencv-python-cv2-causes-error-could-not-load-qt-platform-plugin-xcb-even-though-it-was-found/15
 
----
 
+     
      
 
 ## Usage
 
-----
 
 1. Choose whether to use video from file or camera in menubar
 2. Add object detector from dropdown menu
