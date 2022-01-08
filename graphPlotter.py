@@ -22,7 +22,7 @@ class GraphPlotter():
 
     def set_labels(self, title, x_label, y_label):
         self.title = title
-        self.x_axis_label= x_label
+        self.x_axis_label = x_label
         self.y_axis_label = y_label
 
 

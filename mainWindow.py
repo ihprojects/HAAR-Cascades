@@ -28,6 +28,7 @@ class MainWindow(QMainWindow):
         self.scenario = personCounter.PersonCounter(self.video_player)
 
 
+
         self.init_ui()
         self.show()
 

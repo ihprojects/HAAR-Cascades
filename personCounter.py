@@ -231,7 +231,7 @@ class PersonCounter(Scenario):
         stati = Statistic.Statistic()
         x_axis, y_axis = stati.getDataOfSpecificDate(self.cal._selectedDate, self.combo_date._selectedIndex,self.combo_layouts._selectedIndex)
 
-        self.diagramm.set_labels("Title", "Duration", self.combo_date.cb.currentText())
+        # self.diagramm.set_labels("Title", "Duration", self.combo_date.cb.currentText())
         self.diagramm.draw_graph(x_axis, y_axis)
         # if self.diagramm.is_plotted:
         #     self.diagramm.update()
