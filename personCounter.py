@@ -7,7 +7,7 @@ import fileHandler
 import settings
 import detector
 import Statistic
-import Diagramm
+import graphPlotter
 import CalendarUI
 import ComboBoxUi
 
@@ -38,8 +38,9 @@ class PersonCounter(Scenario):
         self.cal = CalendarUI.MyDatePicker()
         self.combo_date = ComboBoxUi.MyCombobox()
         self.combo_layouts = ComboBoxUi.MyCombobox()
-        self.diagramm = Diagramm.Diagramm()
         self.diagrammLayout = QVBoxLayout()
+        self.diagramm = graphPlotter.GraphPlotter(self.diagrammLayout)
+
 
 
         self._layout =1
@@ -85,7 +86,7 @@ class PersonCounter(Scenario):
     # @logging_table.setter
     def set_logging_table(self, looking_time):
         date_time = str(datetime.datetime.now())
-        self._logging_table.append([looking_time,date_time,self._layout])
+        self.logging_table.append([looking_time,date_time,self._layout])
 
 
     def detec_person(self, faces, detected_faces):
@@ -118,9 +119,9 @@ class PersonCounter(Scenario):
                 detected_faces += [(x, y,datetime.datetime.now())]
                 self.detected_persons += 1
 
-        if len(temp_list > 0):
+        if len(temp_list) > 0:
 
-            reference_set = {i for i in range(0, detected_faces)}
+            reference_set = {i for i in range(0, len(detected_faces))}
             temp_set = set(temp_list)
             difference_set = reference_set.difference(temp_set)
 
@@ -220,20 +221,22 @@ class PersonCounter(Scenario):
         stati = Statistic.Statistic()
         x_axis, y_axis = stati.getDataOfSpecificDate(self.cal._selectedDate, self.combo_date._selectedIndex,self.combo_layouts._selectedIndex)
 
-        if self.diagramm.is_plotted:
-            self.diagramm.update()
-            self.diagrammLayout.removeWidget( self.current_diag)
-            self.current_diag = self.diagramm.UiComponents(x_axis, y_axis, "Layouts", 0, 5)
-            self.diagrammLayout.addWidget(self.current_diag)
-        else:
-            self.diagramm.is_plotted = True
-            if self.combo_layouts._selectedIndex == 4:
-                self.current_diag = self.diagramm.UiComponents(x_axis, y_axis, "Layouts", 0, 5)
-                self.diagrammLayout.addWidget(self.current_diag)
-
-            else:
-                self.current_diag = self.diagramm.UiComponents(x_axis, y_axis, "day")
-                self.diagrammLayout.addWidget(self.current_diag)
+        self.diagramm.set_labels("Title", "Duration", self.combo_date.cb.currentText())
+        self.diagramm.draw_graph(x_axis, y_axis)
+        # if self.diagramm.is_plotted:
+        #     self.diagramm.update()
+        #     self.diagrammLayout.removeWidget( self.current_diag)
+        #     self.current_diag = self.diagramm.UiComponents(x_axis, y_axis, "Layouts", 0, 5)
+        #     self.diagrammLayout.addWidget(self.current_diag)
+        # else:
+        #     self.diagramm.is_plotted = True
+        #     if self.combo_layouts._selectedIndex == 4:
+        #         self.current_diag = self.diagramm.UiComponents(x_axis, y_axis, "Layouts", 0, 5)
+        #         self.diagrammLayout.addWidget(self.current_diag)
+        #
+        #     else:
+        #         self.current_diag = self.diagramm.UiComponents(x_axis, y_axis, "day")
+        #         self.diagrammLayout.addWidget(self.current_diag)
 
 
 

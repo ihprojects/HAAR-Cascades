@@ -20,7 +20,7 @@ class VideoPlayer(QWidget):
         self.video = None
         self.is_ready = False
         self.fps = 30
-        self.frame_size = (1920, 1080)     # default screen size
+        self.screen_size = (1920, 1080)     # default screen size
         self.read_frame = self.read_frame_from_file
         self.current_frame = 1
         self.signals = signals
@@ -101,7 +101,7 @@ class VideoPlayer(QWidget):
             self.slider.hide()
             self.fps = 30
             self.read_frame()
-            self.frame_size = (self.frame.shape[1], self.frame.shape[0])
+            self.screen_size = (self.frame.shape[1], self.frame.shape[0])
             self.is_ready = True
 
         if mode == "file":
@@ -115,7 +115,7 @@ class VideoPlayer(QWidget):
             self.slider.setRange(1, self.video.total_frames)
 
             self.read_frame()
-            self.frame_size = (self.frame.shape[1], self.frame.shape[0])
+            self.screen_size = (self.frame.shape[1], self.frame.shape[0])
             self.is_ready = True
 
 
