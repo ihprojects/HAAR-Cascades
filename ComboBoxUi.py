@@ -18,21 +18,21 @@ class MyCombobox(QWidget):
         widget = QWidget()
         stackpanel = QHBoxLayout()
         widget.setLayout(stackpanel)
+
         self.cb = QComboBox()
         label = QLabel(title+" :")
         stackpanel.addWidget(label)
         stackpanel.addWidget(self.cb)
 
-        #add the item in combo box
         for item in items:
             self.cb.addItem(item)
-        #define event, if index of combo box changed
+
         self.cb.currentIndexChanged.connect(self.selectionchange)
 
         return widget
 
-    def selectionchange(self,selected_index):
-        self._selectedIndex = selected_index
+    def selectionchange(self,i):
+        self._selectedIndex = i
         self._selectedText = self.cb.currentText()
 
 
