@@ -74,6 +74,8 @@ class PersonCounter(Scenario):
             slider.valueChanged.connect(self.change_detection_area)
 #TODO connect with video mode change event
     def init_ui(self):
+
+
         for i in range(2):
             self.sliders[i].setMinimum(0)
             self.sliders[i].setMaximum(self.vid_player.screen_size[i])
@@ -84,7 +86,16 @@ class PersonCounter(Scenario):
             self.sliders[i].setMaximum(self.vid_player.screen_size[i-2])
             self.sliders[i].setValue(self.vid_player.screen_size[i-2])
         self.sliders[1].setInvertedAppearance(True)
-
+        self.cbox = QComboBox()
+        self.cbox.addItem("Layout 1",1)
+        self.cbox.addItem("Layout 2",2)
+        self.cbox.addItem("Layout 3",3)
+        self.cbox.addItem("Layout 4",4)
+        self.ui.verticalLayout.addWidget(self.cbox)
+        self.cbox.currentIndexChanged.connect(self.change_layout)
+    def change_layout(self):
+        self._layout = self.cbox.currentData()
+        print(self._layout)
     def set_detection_area(self):
         pass
 
