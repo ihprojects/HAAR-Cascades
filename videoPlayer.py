@@ -51,11 +51,9 @@ class VideoPlayer(QWidget):
         self.slider = QSlider()
         self.slider.setOrientation(Qt.Orientation.Horizontal)
 
-
         self.layout_main.addWidget(self.screen)
         self.layout_main.addWidget(self.slider)
         self.layout_main.addLayout(self.layout_buttons)
-
 
         #connect signals
         self.btn_play_pause.clicked.connect(self.play_pause)
@@ -64,7 +62,6 @@ class VideoPlayer(QWidget):
         self.slider.sliderReleased.connect(self.set_frame)
         self.signals.pls_pause.connect(self.pause)
         self.signals.pls_resume.connect(self.play)
-
 
 
     def play_pause(self):
