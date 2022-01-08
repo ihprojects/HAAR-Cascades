@@ -11,14 +11,15 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class MyDatePicker(QWidget):
-    global currentYear, currentMonth
+    global currentYear, currentMonth, currentDay
 
     currentMonth = datetime.datetime.now().month
     currentYear = datetime.datetime.now().year
+    currentDay = datetime.datetime.now().day
 
     def __init__(self):
         super().__init__()
-        self._selectedDate = "2022-01-01"
+        self._selectedDate = f"{currentYear}-{ currentMonth}-{currentDay}"
 
 
     def initUI(self,title):
@@ -36,10 +37,7 @@ class MyDatePicker(QWidget):
         self.calendar.setMinimumDate(QDate(2022, 1, 1))
         self.calendar.setMaximumDate(
             QDate(currentYear, currentMonth + 1, calendar.monthrange(currentYear, currentMonth)[1]))
-
-        #self.calendar.setSelectedDate(QDate(currentYear, currentMonth, 1))
-
-        #self.calendar.clicked.connect(self.get_selected_Date)
+        self.calendar.setDate(QDate(currentYear, currentMonth, currentDay))
         self.calendar.dateChanged.connect(self.get_selected_Date)
 
         return widget
