@@ -92,16 +92,26 @@ class Statistic:
         return x_axis, y_axis
 
     def axisDailyData(self, dataframe, layout):
-        dummy_df = dataframe[self.dataframe[self.col_names[2]] == layout]
+
+        # get values for the x- axis
         x_axis = [i for i in range(0, 23)]
-        data = [dummy_df.between_time(f"{i}:00:00", f"{i + 1}:00:00") for i in range(0, 23)]
-        y_axis = []
-        for df in data:
-            mean = df[self.col_names[0]].mean()
-            if math.isnan(mean):
-                y_axis.append(0)
-            else:
-                y_axis.append(mean)
+        try:
+
+            dummy_df = dataframe[self.dataframe[self.col_names[2]] == layout]
+            data = [dummy_df.between_time(f"{i}:00:00", f"{i + 1}:00:00") for i in range(0, 23)]
+            y_axis = []
+
+            for df in data:
+                mean = df[self.col_names[0]].mean()
+                if math.isnan(mean):
+                    y_axis.append(0)
+                else:
+                    y_axis.append(mean)
+
+        except:
+            y_axis.append(0)
+
+
         return x_axis, y_axis
 
     def axisMonthData(self, date_time, layout):
@@ -114,15 +124,21 @@ class Statistic:
         y_axis = []
 
         for day in days:
-            # select the dataframe
-            data_frame = self.dataframe[self.dataframe[self.col_names[2]] == layout]
-            dummy_df = data_frame.loc[f"{y}-{m}-{day}"]
-            mean = dummy_df[self.col_names[0]].mean()
 
-            if math.isnan(mean):
+            try:
+                # select the dataframe
+                data_frame = self.dataframe[self.dataframe[self.col_names[2]] == layout]
+                dummy_df = data_frame.loc[f"{y}-{m}-{day}"]
+                mean = dummy_df[self.col_names[0]].mean()
+
+                if math.isnan(mean):
+                    y_axis += [0]
+                else:
+                    y_axis += [mean]
+
+            except:
                 y_axis += [0]
-            else:
-                y_axis += [mean]
+
 
         return days, y_axis
 
@@ -134,15 +150,19 @@ class Statistic:
         y_axis = []
 
         for month in months:
-            # select the dataframe
-            data_frame = self.dataframe[self.dataframe[self.col_names[2]] == layout]
-            dummy_df = data_frame.loc[f"{y}-{month}"]
-            mean = dummy_df[self.col_names[0]].mean()
 
-            if math.isnan(mean):
+            try:
+                # select the dataframe
+                data_frame = self.dataframe[self.dataframe[self.col_names[2]] == layout]
+                dummy_df = data_frame.loc[f"{y}-{month}"]
+                mean = dummy_df[self.col_names[0]].mean()
+                if math.isnan(mean):
+                    y_axis += [0]
+                else:
+                    y_axis += [mean]
+
+            except:
                 y_axis += [0]
-            else:
-                y_axis += [mean]
 
         return months, y_axis
 
