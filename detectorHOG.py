@@ -10,6 +10,7 @@ class HOGDetector(detector.Detector):
         super().__init__(signals, name, init_arg, tab_widget, color)
         self.detector = init_arg()
         self.init_ui()
+
     def get_rects(self, frame):
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         im = np.float32(gray_frame) / 255.0

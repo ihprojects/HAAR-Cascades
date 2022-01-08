@@ -59,7 +59,6 @@ class Detector(QWidget):
         self.classes = {"name of object to find": "argument for init_detector method"}
         self.color = DetectorParameter(self.sigs, "Color", color, QPushButton)
         self.rect_border_size = DetectorParameter(self.sigs, "Border Size", 2, QSpinBox, 1, 50, 1)
-        # self.classifier = None
         self.is_active = True
 
         # parameters in this list get an ui element to tune them
@@ -71,8 +70,6 @@ class Detector(QWidget):
 
         self.btn_destroy = QPushButton("x")
         self.btn_destroy.clicked.connect(self.destroy)
-
-        # self.init_ui()
 
         self.q_color_dialog = QColorDialog()
 
