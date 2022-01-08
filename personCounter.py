@@ -241,23 +241,19 @@ class PersonCounter(Scenario):
     def button_clicked(self):
         stati = Statistic.Statistic()
         x_axis, y_axis = stati.getDataOfSpecificDate(self.cal._selectedDate, self.combo_date._selectedIndex,self.combo_layouts._selectedIndex)
+        x_axis_label = "day"
 
-        # self.diagramm.set_labels("Title", "Duration", self.combo_date.cb.currentText())
+        if  self.combo_date.cb.currentText() == "day":
+            x_axis_label = "hour"
+        elif self.combo_date.cb.currentText() == "month":
+            x_axis_label = "day"
+        elif self.combo_date.cb.currentText() == "year":
+            x_axis_label = "month"
+
+
+        self.diagramm.set_labels("Title", "Duration", x_axis_label)
         self.diagramm.draw_graph(x_axis, y_axis)
-        # if self.diagramm.is_plotted:
-        #     self.diagramm.update()
-        #     self.diagrammLayout.removeWidget( self.current_diag)
-        #     self.current_diag = self.diagramm.UiComponents(x_axis, y_axis, "Layouts", 0, 5)
-        #     self.diagrammLayout.addWidget(self.current_diag)
-        # else:
-        #     self.diagramm.is_plotted = True
-        #     if self.combo_layouts._selectedIndex == 4:
-        #         self.current_diag = self.diagramm.UiComponents(x_axis, y_axis, "Layouts", 0, 5)
-        #         self.diagrammLayout.addWidget(self.current_diag)
-        #
-        #     else:
-        #         self.current_diag = self.diagramm.UiComponents(x_axis, y_axis, "day")
-        #         self.diagrammLayout.addWidget(self.current_diag)
+
 
 
 
