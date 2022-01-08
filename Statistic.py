@@ -16,6 +16,7 @@ class Statistic:
         _dataframe = self.get_dataframe_from_csv(self.filepath, self.col_names)
         self.dataframe = self.set_dtype_coloumns(_dataframe, self.col_names)
 
+
     def fill_DataTable(self):
         dataTable = []
 
@@ -30,8 +31,7 @@ class Statistic:
                     time_1 = timedelta.total_seconds(
                         datetime.timedelta(minutes=random.randint(0, 6), seconds=random.randint(0, 59)))
 
-                    dataTable.append((str(time_1), str(date), random.randint(1,
-                                                                             4)))
+                    dataTable.append((str(time_1), date.strftime('%Y-%m-%d %H:%M:%S'), random.randint(1,4)))
 
         return dataTable
 
@@ -72,16 +72,16 @@ class Statistic:
         if index_layout_option < 4:
             # Data from the selected year
             if index_dateOption == 2:
-                x_axis, y_axis = self.axisYearData(date_time, index_layout_option)
+                x_axis, y_axis = self.axisYearData(date_time, index_layout_option+1)
 
             # Data from the selected month of the year
             elif index_dateOption == 1:
-                x_axis, y_axis = self.axisMonthData(date_time, index_layout_option)
+                x_axis, y_axis = self.axisMonthData(date_time, index_layout_option+1)
 
             # Data from the selected date for each hour
             elif index_dateOption == 0:
                 df = self.dataframe.loc[date_time]
-                x_axis, y_axis = self.axisDailyData(df, index_layout_option)
+                x_axis, y_axis = self.axisDailyData(df, index_layout_option+1)
 
 
         elif index_layout_option == 4:
@@ -91,7 +91,7 @@ class Statistic:
 
     def axisDailyData(self, dataframe, layout):
 
-        dummy_df = dataframe[self.dataframe[self.col_names[2]] == layout]
+        dummy_df = dataframe[dataframe[self.col_names[2]] == layout]
         x_axis = [i for i in range(0, 23)]
         data = [dummy_df.between_time(f"{i}:00:00", f"{i + 1}:00:00") for i in range(0, 23)]
         y_axis = []
@@ -103,21 +103,27 @@ class Statistic:
                 y_axis.append(mean)
         return x_axis, y_axis
 
+    #Determine the values of the x-axis and y-axis for the diagram. Case: Data of the selected month
     def axisMonthData(self, date_time, layout):
 
-        # eperate date time in year, month, day
+        # separate date time in year, month, day
         y, m, d = date_time.split(sep="-")
 
         # get the days of the selected  month
         days = self.detectDaysOfaMonth(date_time)
         y_axis = []
 
+        # calculate the average duration time for each day of the month
         for day in days:
-            # select the dataframe
+
+            # Filter the data according to the selected layout
             data_frame = self.dataframe[self.dataframe[self.col_names[2]] == layout]
+            # Filter the data according to the selected day
             dummy_df = data_frame.loc[f"{y}-{m}-{day}"]
+            # calculate duration time mean value
             mean = dummy_df[self.col_names[0]].mean()
 
+            #check whether the mean value is not a number, if so convert the value to zero
             if math.isnan(mean):
                 y_axis += [0]
             else:
@@ -135,6 +141,7 @@ class Statistic:
         for month in months:
             # select the dataframe
             data_frame = self.dataframe[self.dataframe[self.col_names[2]] == layout]
+
             dummy_df = data_frame.loc[f"{y}-{month}"]
             mean = dummy_df[self.col_names[0]].mean()
 

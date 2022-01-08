@@ -84,7 +84,7 @@ class PersonCounter(Scenario):
 
     # @logging_table.setter
     def set_logging_table(self, looking_time):
-        date_time = str(datetime.datetime.now())
+        date_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self._logging_table.append([looking_time,date_time,self._layout])
 
 
@@ -195,9 +195,6 @@ class PersonCounter(Scenario):
         self.ui.lay_hor.addLayout(command_layout)
         self.ui.lay_hor.addLayout(self.diagrammLayout)
 
-
-
-
         # Widgets
 
         submit_btn = QPushButton("Submitt")
@@ -210,8 +207,7 @@ class PersonCounter(Scenario):
         # plot_layout.addWidget(self.diagramm._widget)
         command_layout.addWidget(self.combo_date.initUI(["day", "month", "year"], "Selected periode"))
         command_layout.addWidget(self.cal.initUI("selected Date"))
-        command_layout.addWidget(
-            self.combo_layouts.initUI(["Layout 1", "Layout 2", "Layout 3", "Layout 4", "All"], "selected Layout"))
+        command_layout.addWidget(self.combo_layouts.initUI(["Layout 1", "Layout 2", "Layout 3", "Layout 4", "All"], "selected Layout"))
         command_layout.addWidget(submit_btn)
 
     # https://stackoverflow.com/questions/61449954/pyqt5-datepicker-popup
