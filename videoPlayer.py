@@ -3,10 +3,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-import signals
 
-
-class Video():
+class Video:
     def __init__(self, name, fps, total_frames):
         self.name = name
         self.fps = fps
@@ -31,14 +29,14 @@ class VideoPlayer(QWidget):
     def init_ui(self):
         self.layout_main = QVBoxLayout(self)
 
-        #screen
+        # screen
         self.screen = QLabel()
         self.screen.setStyleSheet("background-color: rgb(0, 0, 0);")
         self.screen.setMinimumSize(QSize(800, 450))
         self.screen.setMaximumSize(QSize(800, 450))
 
 
-        #buttons
+        # buttons
         self.layout_buttons = QHBoxLayout()
         self.btn_play_pause = QPushButton()
         self.btn_play_pause.setText("Play")
@@ -55,14 +53,13 @@ class VideoPlayer(QWidget):
         self.layout_main.addWidget(self.slider)
         self.layout_main.addLayout(self.layout_buttons)
 
-        #connect signals
+        # connect signals
         self.btn_play_pause.clicked.connect(self.play_pause)
         self.btn_stop.clicked.connect(self.stop)
         self.slider.sliderPressed.connect(self.pause)
         self.slider.sliderReleased.connect(self.set_frame)
         self.signals.pls_pause.connect(self.pause)
         self.signals.pls_resume.connect(self.play)
-
 
     def play_pause(self):
         if self.is_playing:
