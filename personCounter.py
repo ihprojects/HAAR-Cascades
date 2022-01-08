@@ -230,7 +230,7 @@ class PersonCounter(Scenario):
 
         # Widgets
 
-        submit_btn = QPushButton("Submitt")
+        submit_btn = QPushButton("Submit")
         submit_btn.clicked.connect(self.button_clicked)
 
         label = QLabel("Statistik")
