@@ -17,10 +17,11 @@ class GraphPlotter():
         self.target_layout.removeWidget(self.graphWidget)
         self.graphWidget = pg.PlotWidget()
         self.graphWidget.setLabel('left', self.y_axis_label, units ='sec')
+        self.graphWidget.setLabel('bottom', self.x_axis_label, units='')
         self.graphWidget.addItem(self.bar_graph)
         self.target_layout.addWidget(self.graphWidget)
 
-    def set_labels(self, title, x_label, y_label):
+    def set_labels(self, title,y_label,x_label):
         self.title = title
         self.x_axis_label= x_label
         self.y_axis_label = y_label

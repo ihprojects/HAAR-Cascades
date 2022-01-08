@@ -74,16 +74,16 @@ class Statistic:
         if index_layout_option < 4:
             # Data from the selected year
             if index_dateOption == 2:
-                x_axis, y_axis = self.axisYearData(date_time, index_layout_option)
+                x_axis, y_axis = self.axisYearData(date_time, index_layout_option+1)
 
             # Data from the selected month of the year
             elif index_dateOption == 1:
-                x_axis, y_axis = self.axisMonthData(date_time, index_layout_option)
+                x_axis, y_axis = self.axisMonthData(date_time, index_layout_option+1)
 
             # Data from the selected date for each hour
             elif index_dateOption == 0:
-                df = self.dataframe.loc[date_time]
-                x_axis, y_axis = self.axisDailyData(df, index_layout_option+1)
+
+                x_axis, y_axis = self.axisDailyData( date_time,index_layout_option+1)
 
 
         elif index_layout_option == 4:
@@ -91,15 +91,16 @@ class Statistic:
 
         return x_axis, y_axis
 
-    def axisDailyData(self, dataframe, layout):
+    def axisDailyData(self, date_time,layout):
 
         # get values for the x- axis
         x_axis = [i for i in range(0, 23)]
-        try:
+        y_axis=[]
 
-            dummy_df = dataframe[self.dataframe[self.col_names[2]] == layout]
+        try:
+            df = self.dataframe.loc[date_time]
+            dummy_df = df.dataframe[df.dataframe[self.col_names[2]] == layout]
             data = [dummy_df.between_time(f"{i}:00:00", f"{i + 1}:00:00") for i in range(0, 23)]
-            y_axis = []
 
             for df in data:
                 mean = df[self.col_names[0]].mean()
@@ -109,7 +110,7 @@ class Statistic:
                     y_axis.append(mean)
 
         except:
-            y_axis.append(0)
+            y_axis = [0 for i in range(0,23)]
 
 
         return x_axis, y_axis
