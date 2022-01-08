@@ -130,11 +130,18 @@ class PersonCounter(Scenario):
             reference_set = {i for i in range(0,  len_detected_faces )}
             temp_set = set(temp_list)
             difference_set = reference_set.difference(temp_set)
-
+            temp_value=0
             for i in difference_set:
-                self.set_logging_table(
-                    datetime.timedelta.total_seconds(datetime.datetime.now() - detected_faces[i][2]))
-                detected_faces.remove(detected_faces[i])
+
+                try:
+                    self.set_logging_table(
+                        datetime.timedelta.total_seconds(datetime.datetime.now() - detected_faces[i][2]))
+                    detected_faces.remove(detected_faces[i-temp_value])
+                    temp_value+=1
+
+                except:
+                    print(i)
+
 
 
 
@@ -151,7 +158,7 @@ class PersonCounter(Scenario):
             self.face_counter += 1
             self.none_face_counter = 0
 
-        if self.none_face_counter == self.vid_player.fps:
+        if self.none_face_counter ==  self.vid_player.fps:
             self.none_face_counter = 0
 
             if len(self.detected_faces)>0:
