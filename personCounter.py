@@ -7,7 +7,7 @@ import fileHandler
 import settings
 import detector
 import Statistic
-import Diagramm
+import graphPlotter
 import CalendarUI
 import ComboBoxUi
 
@@ -38,7 +38,7 @@ class PersonCounter(Scenario):
         self.cal = CalendarUI.MyDatePicker()
         self.combo_date = ComboBoxUi.MyCombobox()
         self.combo_layouts = ComboBoxUi.MyCombobox()
-        self.diagramm = Diagramm.Diagramm()
+        #self.diagramm = graphPlotter.GraphPlotter()
         self.diagrammLayout = QVBoxLayout()
         self.diagramm = graphPlotter.GraphPlotter(self.diagrammLayout)
 
@@ -127,7 +127,7 @@ class PersonCounter(Scenario):
 
         if len(temp_list) > 0:
 
-            reference_set = {i for i in range(0, len(detected_faces))}
+            reference_set = {i for i in range(0,  len_detected_faces )}
             temp_set = set(temp_list)
             difference_set = reference_set.difference(temp_set)
 
@@ -136,13 +136,13 @@ class PersonCounter(Scenario):
                     datetime.timedelta.total_seconds(datetime.datetime.now() - detected_faces[i][2]))
                 detected_faces.remove(detected_faces[i])
 
+
+
+
+
     # passing the video player and detector objects as arguments
     def process_frame(self, dtc):
 
-        offset_x, offset_y, width_detection_area, height_detection_area = self.detection_area
-        #sub_frame = vid_player.frame[offset_y:height_detection_area + offset_y, offset_x:width_detection_area + offset_x, :]
-        # gray = cv2.cvtColor(sub_frame, cv2.COLOR_BGR2GRAY)
-        # faces = self._person_detector.cascade_classifier.detectMultiScale(gray, 1.5, 4)
 
         if len(dtc.rects) == 0:
             self.none_face_counter += 1
@@ -173,7 +173,7 @@ class PersonCounter(Scenario):
                 self.detec_person(dtc.rects, self.detected_faces)
 
         # export the logging data
-        if len(self.logging_table) >= 50:
+        if len(self.logging_table) >= 3:
             is_successful = fileHandler.FileHandler.create_csv(settings.FILE_PATH_CSV, self.logging_table)
             if is_successful:
                 self.logging_table = []
