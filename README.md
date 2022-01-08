@@ -1,4 +1,4 @@
-##Overview
+## Overview
 
 ---
 
@@ -8,7 +8,7 @@ Adjust parameters to find the setup best suited to your task.
 Allows video files and camera input.
 
 
-##Installation
+## Installation
 
 ---
 git clone https://github.com/ihprojects/HAAR-Cascades.git
@@ -27,7 +27,7 @@ https://forum.qt.io/topic/119109/using-pyqt5-with-opencv-python-cv2-causes-error
 
      
 
-##Usage
+## Usage
 
 ----
 
